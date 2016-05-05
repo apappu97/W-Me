@@ -1,0 +1,108 @@
+//index.ios.js ///
+var React = require('react-native');
+var Main = require('./App/Components/Main');
+
+var {
+  AppRegistry,
+  Component,
+  StyleSheet,
+  Text,
+  NavigatorIOS,
+  View
+} = React;
+
+class mentalHealth extends React.Component{
+  render() {
+    return (
+      <NavigatorIOS
+        style = {styles.container}
+        initialRoute={{
+          title: 'Mental Health',
+          component: Main
+        }} />
+    );
+  }
+};
+
+var styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+  },
+  welcome: {
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
+  instructions: {
+    textAlign: 'center',
+    color: '#333333',
+    marginBottom: 5,
+  },
+});
+
+AppRegistry.registerComponent('mentalHealth', () => mentalHealth);
+
+//// Main.js ////
+class Main extends React.Component{
+	constructor(props){
+		super(props); // calls component constructor
+		this.state = {
+			username:'',
+			password: '',
+			isLoading: false,
+			error: false
+		};
+	}
+
+	handleChange(event, usernameOrPass){
+		switch(usernameOrPass){
+			case 0:
+			this.setState({
+				username: event.nativeEvent.text // gets the input fro what's passed
+			});
+			break;
+
+		case 1:
+			this.setState({
+				password: event.nativeEvent.text
+			});
+			break;
+		}
+	}
+
+	handleSubmit(){
+		// load spinner
+		this.setState({
+			isLoading: true
+		});
+		// handle login logic
+		this.props.navigator.push({
+			title: '',// username
+			component: '',//
+			passProps: {userInfo: {}}// whatever response is
+		});
+		// reset
+		this.setState({
+			isLoading: false,
+			error: false,
+			username: ''
+		});
+	}
+
+	render(){
+		var showErr = (
+			this.state.error ? <Text> {this.state.error} </Text> : <Text></Text>
+		);
+
+		return (
+			<View 
+			  style = {styles.mainContainer}>
+			<Text> Yo </Text>
+			</View>
+		)
+	}
+}
+module.exports = Main;
