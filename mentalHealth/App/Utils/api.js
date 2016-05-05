@@ -13,16 +13,11 @@ User:https://socialgoodmh.firebaseio.com/users/apappu
 JSON Example:
 
 {
-    "total_score": 0,
-    "number_of_days": 0,
+    "score": 0,
+    "days": 0,
     "running_score": [],
     "friends": []
 }
- 
-*/
-
-
-/*
 
 auth
 
@@ -68,8 +63,27 @@ function createUser(username, password, firstname, login) {
             return true;
         }
     });
-    login(username, password);
-    // set the user with some 0'ed out data
+    if (login(username, password)) {
+        setUpUser();
+    }
+}
+
+function setUpUser() {
+    if (auth == null) {
+        console.log("Isn't logged in");
+        return false;
+    }
+    var localUserRef = usersRef.child(auth.uid);
+    localUserRef.set({
+        "score": 0,
+        "days": 0,
+        "running_score": [],
+        "friends": []
+    });
+    var user_map = ref.child("user_map");
+    user_map.push({
+        email : auth.uid
+    });
 }
 
 function login(username, password) {
@@ -197,13 +211,25 @@ function getMonthlyScore() {
     }
 }
 
-// use this for adding friends: https://stackoverflow.com/questions/17433578/protected-content-in-firebase-possible
+// use this for adding friends: d
 function addFriends(friendsArr) {
 
 }
 
+/* TODO:  Need to have a call to look at the user_map and
+figure out if a friend exists, then it needs to add them to the list of
+    friends of a person and the person they added, then write the security rule
+    for reading friends
+    then write the security rule to allow looking at another person's score
+
+    make sure you do a query by child
+
+    also write a getauth event to find out when auth expires, so that the auth
+    var check for null works properly
+
+    for letting a friend know, we will need to have some code that is executing when the app begins
+    they look through users score and if they are the lowest, they let their friend with the highest score know
+    we will use either react native for push notif or batch[
+*/
+
 // write a method for letting friends know that a person isn't doing well
-
-
-
-
