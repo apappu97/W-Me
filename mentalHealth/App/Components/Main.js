@@ -1,6 +1,7 @@
 // Welcome to Journal Buddy!
 
 var React = require('react-native');
+var Welcome = require('./Welcome');
 
 var {
   StyleSheet,
@@ -46,7 +47,7 @@ var styles = StyleSheet.create({
 		width: 157,
 		height: 14,
 		color: "#043f83",
-		fontFamily: 'Helvetica',
+		fontFamily: 'Avenir',
 		alignSelf: 'center',
 		textAlign: 'center',
 		fontSize: 12,
@@ -56,7 +57,7 @@ var styles = StyleSheet.create({
 		width: 157,
 		height: 14,
 		color: "#fff",
-		fontFamily: 'Helvetica',
+		fontFamily: 'Avenir',
 		alignSelf: 'center',
 		textAlign: 'center',
 		fontSize: 12,
@@ -114,22 +115,6 @@ class Main extends React.Component{
 		})
 	}
 
-	//handleChange(event, usernameOrPass){
-		// switch(usernameOrPass){
-		// 	case 0:
-		// 	this.setState({
-		// 		username: event.nativeEvent.text // gets the input fro what's passed
-		// 	});
-		// 	break;
-
-		// case 1:
-		// 	this.setState({
-		// 		password: event.nativeEvent.text
-		// 	});
-		// 	break;
-		// }
-	//}
-
 	handleSubmit(){
 		// load spinner
 		this.setState({
@@ -137,8 +122,8 @@ class Main extends React.Component{
 		});
 		// handle login logic
 		this.props.navigator.push({
-			title: '',// username
-			component: '',//
+			title: 'Welcome',// username
+			component: Welcome,//
 			passProps: {userInfo: {}}// whatever response is
 		});
 		// reset
