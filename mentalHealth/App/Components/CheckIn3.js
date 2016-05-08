@@ -1,5 +1,6 @@
 var React = require('react-native');
-var Summary = require('./Summary')
+var Summary = require('./Summary');
+
 var {
   View,
   Text,
@@ -49,31 +50,57 @@ var styles = StyleSheet.create({
 		fontSize: 12,
 		lineHeight: 14,
 		backgroundColor: 'transparent'
-	}, 
+	} 
 });
 
-class Welcome extends React.Component{
+class CheckIn3 extends React.Component{
 	submitScore(score){
-		console.log("yo");
 		this.props.navigator.push({
 			component: Summary,
 			title: 'Summary',
-			passProps: {
-
+			passProps: { 
+				userInfo: this.props.userInfo
 			}
-		})
+		});
 	}
-
+	
 	render(){
 		return(
 			<View style = {styles.mainContainer}> 
 			  <Image style={styles.image} source={require("../images/bindings.png")}>
-				<Text style = {styles.welcome}> How are you feeling today Aneesh? </Text>
+				<Text style = {styles.welcome}> How are you feeling about the future? </Text>
 				<View style = {styles.container1}>
 				    <TouchableHighlight
-					  onPress = {this.submitScore(1)}
+					  onPress = {this.submitScore.bind(this, 1)}
 					  underlayColor = '#f1eeee'>
 					    <Image source = {require("../images/smile.png")} />
+					</TouchableHighlight>
+					<TouchableHighlight
+					  onPress = {this.submitScore.bind(this, 2)}
+					  underlayColor = '#f1eeee'>
+					    <Image source = {require("../images/face.png")} />
+					</TouchableHighlight>
+					<TouchableHighlight
+					  onPress = {this.submitScore.bind(this, 3)}
+					  underlayColor = '#f1eeee'>
+					    <Image source = {require("../images/face.png")} />
+					</TouchableHighlight>
+				</View>
+				<View style = {styles.container2}>
+					<TouchableHighlight
+					  onPress = {this.submitScore.bind(this, 4)}
+					  underlayColor = '#f1eeee'>
+					    <Image source = {require("../images/face.png")} />
+					</TouchableHighlight>
+					<TouchableHighlight
+					  onPress = {this.submitScore.bind(this, 5)}
+					  underlayColor = '#f1eeee'>
+					    <Image source = {require("../images/face.png")} />
+					</TouchableHighlight>
+					<TouchableHighlight
+					  onPress = {this.submitScore.bind(this, 6)}
+					  underlayColor = '#f1eeee'>
+					    <Image source = {require("../images/sad.png")} />
 					</TouchableHighlight>
 				</View>
 			  </Image>
@@ -82,4 +109,4 @@ class Welcome extends React.Component{
 	}
 }
 
-module.exports = Welcome
+module.exports = CheckIn3;

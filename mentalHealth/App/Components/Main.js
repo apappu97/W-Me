@@ -1,7 +1,7 @@
 // Welcome to Journal Buddy!
 
 var React = require('react-native');
-var Welcome = require('./Welcome');
+var CheckIn1 = require('./CheckIn1');
 
 var {
   StyleSheet,
@@ -110,8 +110,14 @@ class Main extends React.Component{
 	}
 
 	handleChangePassword(event){
+		var length = event.nativeEvent.text.length;
+		var display = "";
+		for(var i = 0; i < length; i++){
+			display += "*";
+		}
 		this.setState({
-			password: event.nativeEvent.text // gets the input fro what's passed
+			toDisplay: display,
+			password: event.nativeEvent.text // gets the input from what's passed
 		})
 	}
 
@@ -122,10 +128,11 @@ class Main extends React.Component{
 		});
 		// handle login logic
 		this.props.navigator.push({
-			title: 'Welcome',// username
-			component: Welcome,//
-			passProps: {userInfo: {}}// whatever response is
+			title: 'Check In',// username
+			component: CheckIn1,//
+			passProps: {userInfo: this.props}// whatever response is
 		});
+
 		// reset
 		this.setState({
 			isLoading: false,
@@ -149,7 +156,7 @@ class Main extends React.Component{
 			    onChange = {this.handleChangeUsername.bind(this)} />
 			  <TextInput
 			    style = {styles.password}
-			    value = {this.state.password}
+			    value = {this.state.toDisplay}
 			    onChange = {this.handleChangePassword.bind(this)} /> 
 			  <TouchableHighlight
 			    style = {styles.submit}

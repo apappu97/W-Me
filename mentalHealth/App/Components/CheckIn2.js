@@ -1,5 +1,6 @@
 var React = require('react-native');
-var Summary = require('./Summary')
+var CheckIn3 = require('./CheckIn3');
+
 var {
   View,
   Text,
@@ -49,64 +50,63 @@ var styles = StyleSheet.create({
 		fontSize: 12,
 		lineHeight: 14,
 		backgroundColor: 'transparent'
-	}, 
+	} 
 });
 
-class Welcome extends React.Component{
-	
+class CheckIn2 extends React.Component{
 	submitScore(score){
 		this.props.navigator.push({
-			component: Summary,
-			title: 'Summary',
-			passProps: {
-
+			component: CheckIn3,
+			title: 'Check In',
+			passProps: { 
+				userInfo: this.props.userInfo
 			}
-		})
+		});
 	}
 	
 	render(){
 		return(
 			<View style = {styles.mainContainer}> 
 			  <Image style={styles.image} source={require("../images/bindings.png")}>
-				<Text style = {styles.welcome}> How are you feeling today Aneesh? </Text>
+				<Text style = {styles.welcome}> How has your past week been? </Text>
 				<View style = {styles.container1}>
 				    <TouchableHighlight
-					  onPress = {this.submitScore(1)}
+					  onPress = {this.submitScore.bind(this, 1)}
 					  underlayColor = '#f1eeee'>
 					    <Image source = {require("../images/smile.png")} />
 					</TouchableHighlight>
-					// <TouchableHighlight
-					//   onPress = {this.submitScore(2)}
-					//   underlayColor = '#f1eeee'>
-					//     <Image source = {require("../images/face.png")} />
-					// </TouchableHighlight>
-					// <TouchableHighlight
-					//   onPress = {this.submitScore(3)}
-					//   underlayColor = '#f1eeee'>
-					//     <Image source = {require("../images/face.png")} />
-					// </TouchableHighlight>
+					<TouchableHighlight
+					  onPress = {this.submitScore.bind(this, 2)}
+					  underlayColor = '#f1eeee'>
+					    <Image source = {require("../images/face.png")} />
+					</TouchableHighlight>
+					<TouchableHighlight
+					  onPress = {this.submitScore.bind(this, 3)}
+					  underlayColor = '#f1eeee'>
+					    <Image source = {require("../images/face.png")} />
+					</TouchableHighlight>
 				</View>
-				// <View style = {styles.container2}>
-				// 	<TouchableHighlight
-				// 	  onPress = {this.submitScore(4)}
-				// 	  underlayColor = '#f1eeee'>
-				// 	    <Image source = {require("../images/face.png")} />
-				// 	</TouchableHighlight>
-				// 	<TouchableHighlight
-				// 	  onPress = {this.submitScore(5)}
-				// 	  underlayColor = '#f1eeee'>
-				// 	    <Image source = {require("../images/face.png")} />
-				// 	</TouchableHighlight>
-				// 	<TouchableHighlight
-				// 	  onPress = {this.submitScore(6)}
-				// 	  underlayColor = '#f1eeee'>
-				// 	    <Image source = {require("../images/sad.png")} />
-				// 	</TouchableHighlight>
-				// </View>
+				<View style = {styles.container2}>
+					<TouchableHighlight
+					  onPress = {this.submitScore.bind(this, 4)}
+					  underlayColor = '#f1eeee'>
+					    <Image source = {require("../images/face.png")} />
+					</TouchableHighlight>
+					<TouchableHighlight
+					  onPress = {this.submitScore.bind(this, 5)}
+					  underlayColor = '#f1eeee'>
+					    <Image source = {require("../images/face.png")} />
+					</TouchableHighlight>
+					<TouchableHighlight
+					  onPress = {this.submitScore.bind(this, 6)}
+					  underlayColor = '#f1eeee'>
+					    <Image source = {require("../images/sad.png")} />
+					</TouchableHighlight>
+				</View>
 			  </Image>
 			</View>
 		)
 	}
 }
 
-module.exports = Welcome
+module.exports = CheckIn2;
