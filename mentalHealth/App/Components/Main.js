@@ -1,8 +1,9 @@
 // Welcome to Journal Buddy!
 
 var React = require('react-native');
-//var CheckIn1 = require('./CheckIn1');
-var Profile = require('./Profile')
+var CheckIn1 = require('./CheckIn1');
+var Profile = require('./Profile');
+var Signup = require('./Signup');
 
 var {
   StyleSheet,
@@ -142,6 +143,27 @@ class Main extends React.Component{
 		});
 	}
 
+	handleSignup(){
+		// load spinner
+		this.setState({
+			isLoading: true
+		});
+		// handle login logic
+		this.props.navigator.push({
+			title: 'Sign Up',// username
+			component: Signup,//
+			passProps: {userInfo: this.props}// whatever response is
+		});
+
+		// reset
+		this.setState({
+			isLoading: false,
+			error: false,
+			username: ''
+		});
+	}
+
+
 	render(){
 		var showErr = (
 			this.state.error ? <Text> {this.state.error} </Text> : <Text></Text>
@@ -164,6 +186,12 @@ class Main extends React.Component{
 			    onPress = {this.handleSubmit.bind(this)}
 			    underlayColor = 'white'>
 			      <Text style = {styles.loginText}> Login </Text>
+			  </TouchableHighlight>
+			  <TouchableHighlight
+			    style = {styles.submit}
+			    onPress = {this.handleSignup.bind(this)}
+			    underlayColor = 'white'>
+			      <Text style = {styles.loginText}> Sign Up </Text>
 			  </TouchableHighlight>
 			  <ActivityIndicatorIOS
 			    animating = {this.state.isLoading}

@@ -56,15 +56,25 @@ var styles = StyleSheet.create({
 
 class CheckIn3 extends React.Component{
 	submitScore(score){
+
+		// this.props.navigator.push({
+		// 	component: Settings,
+		// 	title: 'Settings',
+		// 	passProps: { 
+		// 		userInfo: this.props.userInfo
+		// 	}
+		// });
+
+		var Profile = require('./Profile');
 		this.props.navigator.push({
-			component: Settings,
-			title: 'Settings',
+			component: Profile,
+			title: 'Profile',
 			passProps: { 
 				userInfo: this.props.userInfo
 			}
 		});
 	}
-	
+
 	render(){
 		return(
 			<View style = {styles.mainContainer}> 
