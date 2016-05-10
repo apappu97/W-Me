@@ -1,9 +1,15 @@
+var React = require('react-native');
 var Firebase = require("firebase");
 
 var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
 
 var usermapRef = ref.child("user_map");
 var usersRef = ref.child("users");
+
+
+var {
+    AsyncStorage
+} = React;
 
 /*
 Routes
@@ -36,6 +42,8 @@ var auth = null;
 
 
 
+console.log(createUser("apappu@stanford.edu", "socialgood", "Aneesh"));
+
 
 /*
 createUser is a method that takes in a username and a password and returns
@@ -50,7 +58,7 @@ TODO: Figure out what to do about storing auth tokens locally to ReactNative
 */
 
 
-function createUser(username, password, firstname, login) {
+function createUser(username, password, firstname) {
     if (typeof username != "string" || typeof password != "string") {
             throw "Username and/or password isn't a string";
     }
@@ -64,11 +72,16 @@ function createUser(username, password, firstname, login) {
         } else {
             console.log("Successfully created user account with uid:", userData.uid);
             auth = userData;
-            login(username, password, setUpUser(firstname, username));
+            AsyncStorage.setItem("username", username).then((value) => {
+                AsyncStorage.setItem("password", password).then(() => {
+                    // credentials updated, login now
+                    login(username, password, setUpUser(firstname, username));
+                })
+            })
+
         }
     });
 }
-
 
 // only call this once, it's called when a user is created
 function setUpUser(firstname, email) {
@@ -89,6 +102,18 @@ function setUpUser(firstname, email) {
         uid : auth.uid,
         email: email
     });
+}
+
+function getUsername(){
+    AsyncStorage.getItem("username").then((value) => {
+        return value;
+    })
+}
+
+function getPassword(){
+    AsyncStorage.getItem("password").then((value) => {
+        return value;
+    })
 }
 
 function login(username, password, callback) {
