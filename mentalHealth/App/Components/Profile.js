@@ -27,7 +27,7 @@ var styles = StyleSheet.create({
   }
 });
 
-class Dashboard extends React.Component{
+class Profile extends React.Component{
   makeBackground(btn){
     var obj = {
       flexDirection: 'row',
@@ -45,6 +45,7 @@ class Dashboard extends React.Component{
     return obj;
   }
   goToProfile(){
+    var CheckIn1 = require('./CheckIn1');
     this.props.navigator.push({
       component: CheckIn1,
       title: "Check In",
@@ -92,8 +93,8 @@ class Dashboard extends React.Component{
   }
 };
 
-Dashboard.propTypes = {
+Profile.propTypes = {
   userInfo: React.PropTypes.object.isRequired
 }
 
-module.exports = Dashboard;
+module.exports = Profile;
