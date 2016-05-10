@@ -2,6 +2,7 @@ var Firebase = require("firebase");
 
 var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
 
+var usermapRef = ref.child("user_map");
 var usersRef = ref.child("users");
 
 /*
@@ -34,6 +35,8 @@ TODO: https://www.firebase.com/docs/web/guide/user-auth.html
 var auth = null;
 
 
+
+
 /*
 createUser is a method that takes in a username and a password and returns
 a boolean value that returns true if everything went ok, and false if there
@@ -50,7 +53,7 @@ TODO: Figure out what to do about storing auth tokens locally to ReactNative
 function createUser(username, password, firstname, login) {
     if (typeof username != "string" || typeof password != "string") {
             throw "Username and/or password isn't a string";
-        }
+    }
     ref.createUser({
         email    : username,
         password : password
@@ -60,15 +63,15 @@ function createUser(username, password, firstname, login) {
             return false;
         } else {
             console.log("Successfully created user account with uid:", userData.uid);
-            return true;
+            auth = userData;
+            login(username, password, firstname, setUpUser(firstname, username));
         }
     });
-    if (login(username, password)) {
-        setUpUser();
-    }
 }
 
-function setUpUser() {
+
+// only call this once, it's called when a user is created
+function setUpUser(firstname, email) {
     if (auth == null) {
         console.log("Isn't logged in");
         return false;
@@ -77,16 +80,18 @@ function setUpUser() {
     localUserRef.set({
         "score": 0,
         "days": 0,
-        "running_score": [],
-        "friends": []
+    }, function() {
+        console.log("set up a user");
     });
     var user_map = ref.child("user_map");
     user_map.push({
-        email : auth.uid
+        name : firstname,
+        uid : auth.uid,
+        email: email
     });
 }
 
-function login(username, password) {
+function login(username, password, callback) {
     ref.authWithPassword({
         email    : username,
         password : password
@@ -109,7 +114,9 @@ function login(username, password) {
         } else {
             console.log("Authenticated successfully with payload:", authData);
             auth = authData;
-            return true;
+            if (typeof callback === "function") {
+                callback();
+            }
         }
     });
 }
@@ -129,7 +136,7 @@ function isThereData() {
 
 // hefty call?
 
-function getUserInfo() {
+function getUserInfo(callback) {
     if (auth == null) {
         console.log("Isn't logged in");
         return false;
@@ -137,9 +144,12 @@ function getUserInfo() {
     localUserRef = usersRef.child(auth.uid);
     var userInfo = null;
     localUserRef.once("value", function(data) {
-        userInfo = data;
+        userInfo = data.val();
+    }, function() {
+        if (typeof callback === 'function')
+        callback(userInfo);
     });
-    return userInfo;
+
 }
 
 function setScore(todayScore) {
@@ -153,9 +163,8 @@ function setScore(todayScore) {
         var localUserRef = usersRef.child(auth.uid);
         var score = userInfo.score;
         var days = userInfo.days + 1;
-        var runningScore = userInfo.running_score.val();
         score += todayScore;
-        runningScore.push(todayScore);
+        localUserRef.push({running_score:todayScore});
         localUserRef.update({
             "score": score,
             "days": days,
@@ -188,7 +197,6 @@ function getAverageScore() {
 }
 
 function getWeeklyScore() {
-    "use strict";
     if (auth == null) {
         console.log("Isn't logged in");
         return false;
@@ -200,20 +208,67 @@ function getWeeklyScore() {
 }
 
 function getMonthlyScore() {
-    "use strict";
     if (auth == null) {
         console.log("Isn't logged in");
         return false;
     }
-    var userInfo = getUserInfo();
-    if (userInfo) {
-        return userInfo.running_score.slice(Math.max(arr.length - 31, 0), 31);
+    getUserInfo(function(userInfo) {
+        if (userInfo) {
+            return userInfo.running_score.slice(Math.max(arr.length - 31, 0), 31);
+        }
+    });
+}
+
+function getAuthID(email) {
+    if (auth == null) {
+        console.log("Isn't logged in");
+        return false;
     }
+    // var localUserRef = u
 }
 
 // use this for adding friends: d
-function addFriends(friendsArr) {
+function addFriends(email) {
+    if (auth == null) {
+        console.log("Isn't logged in");
+        return false;
+    }
+    // test to figure out if duplicate friends?
+    usermapRef.orderByChild("email").equalTo("josh.j.singer@gmail.com").limitToFirst(1).once('value', function (obj) {
+        obj.forEach(function(friendObj) {
+        {
+            console.log("friendObj\n");
+            console.log(friendObj + "\n");
+            var name = friendObj.child("name").val();
+            var email = friendObj.child("email").val();
+            var friendAuthID = friendObj.child("uid").val();
+            console.log("name: " + name + "\nemail: " + email + "\nfriendid:" + friendAuthID);
+            console.log("ADD FRIENDS WAS QUERIED");
+            var localUserRef = usersRef.child(auth.uid);
+            localUserRef.child("friends").push({
+                email: email,
+                name: name,
+                uid: friendAuthID
+            }, function () {
+                console.log("friend added")
+            });
+        }});
+    });
+}
 
+function getListOfFriends() {
+    if (auth == null) {
+        console.log("Isn't logged in");
+        return false;
+    }
+    var listOfFriends = [];
+    usersRef.child(auth.uid).orderByChild("friends").once('value', function(obj) {
+        obj.forEach(function(friend) {
+            console.log(friend);
+            listOfFriends.push(friend.val());
+        });
+        console.log(listOfFriends);
+    });
 }
 
 /* TODO:  Need to have a call to look at the user_map and
@@ -226,10 +281,9 @@ figure out if a friend exists, then it needs to add them to the list of
 
     also write a getauth event to find out when auth expires, so that the auth
     var check for null works properly
-
     for letting a friend know, we will need to have some code that is executing when the app begins
     they look through users score and if they are the lowest, they let their friend with the highest score know
-    we will use either react native for push notif or batch[
+    we will use either react native for push notif or batch[a
 */
 
 // write a method for letting friends know that a person isn't doing well
