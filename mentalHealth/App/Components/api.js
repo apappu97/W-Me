@@ -1,4 +1,4 @@
-var React = require('react-native');
+//var React = require('react-native');
 var Firebase = require("firebase");
 
 var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
@@ -38,7 +38,7 @@ TODO: https://www.firebase.com/docs/web/guide/user-auth.html
 */
 
 
-var auth = null;
+var auth = getAuthToken();
 
 
 
@@ -57,6 +57,17 @@ TODO: Figure out what to do about storing auth tokens locally to ReactNative
 
 */
 
+function checkAuthentication(){
+    getUsername().then((storedUsername) => {
+        getPassword().then((storedPassword) => {
+            if(username == undefined || password == undefined){
+                return false;
+            } else{
+                return login(storedUsername, storedPassword);
+            }
+        })
+    })
+}
 
 function createUser(username, password, firstname) {
     if (typeof username != "string" || typeof password != "string") {
@@ -105,15 +116,21 @@ function setUpUser(firstname, email) {
 }
 
 function getUsername(){
-    AsyncStorage.getItem("username").then((value) => {
-        return value;
-    })
+    return AsyncStorage.getItem("username");
 }
 
 function getPassword(){
-    AsyncStorage.getItem("password").then((value) => {
+    return AsyncStorage.getItem("password");
+}
+
+function storeAuthToken(authToken){
+    return AsyncStorage.setItem("authToken", authToken);
+}
+
+function getAuthToken(){
+    AsyncStorage.getItem("authToken", authToken).then((value) =>{
         return value;
-    })
+    });
 }
 
 function login(username, password, callback) {
@@ -139,9 +156,11 @@ function login(username, password, callback) {
         } else {
             console.log("Authenticated successfully with payload:", authData);
             auth = authData;
-            if (typeof callback === "function") {
-                callback();
-            }
+            storeAuthToken(auth).then(() => {
+                if (typeof callback === "function") {
+                    callback();
+                }
+            })
         }
     });
 }

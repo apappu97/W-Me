@@ -2,8 +2,12 @@
 
 var React = require('react-native');
 var CheckIn1 = require('./CheckIn1');
+<<<<<<< HEAD
 var Profile = require('./Profile');
 var Signup = require('./Signup');
+=======
+var Profile = require('./Profile')
+>>>>>>> ec7e7185e3276b1f45d54aa697e3b31ac00eb136
 
 var {
   StyleSheet,
