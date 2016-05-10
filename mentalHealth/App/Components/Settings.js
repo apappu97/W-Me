@@ -1,5 +1,5 @@
 var React = require('react-native');
-//var Friends = require('./Friends');
+var Friends = require('./Friends');
 
 var {
   View,
@@ -56,13 +56,22 @@ var styles = StyleSheet.create({
 		backgroundColor: "#5ca6f2",
 		borderRadius: 16,
 		alignSelf: 'center',
-		marginTop: 10
+		marginTop: 20
+	},
+		manage: {
+		/* Style for "Login" button */
+		width: 207,
+		height: 33,
+		backgroundColor: "#5ca6f2",
+		borderRadius: 16,
+		alignSelf: 'center',
+		marginTop: 100
 	}
 });
 class Settings extends React.Component{
 	manageFriends(){
 		this.props.navigator.push({
-			component: Summary,
+			component: Friends,
 			title: 'Manage Friend Circle',
 			passProps: { 
 				userInfo: this.props.userInfo
@@ -90,9 +99,10 @@ class Settings extends React.Component{
 	render(){
 		return(
 			<View style = {styles.mainContainer}> 
+			
 			  <Image style={styles.image} source={require("../images/bindings.png")}>
 				    <TouchableHighlight
-				      style = {styles.submit}
+				      style = {styles.manage}
 				      onPress = {this.manageFriends.bind(this)}
 				      underlayColor = 'f1eeee'>
 				        <Text style = {styles.button}> Manage Friend Circle </Text>

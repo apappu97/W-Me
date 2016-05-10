@@ -2,12 +2,8 @@
 
 var React = require('react-native');
 var CheckIn1 = require('./CheckIn1');
-<<<<<<< HEAD
 var Profile = require('./Profile');
 var Signup = require('./Signup');
-=======
-var Profile = require('./Profile')
->>>>>>> ec7e7185e3276b1f45d54aa697e3b31ac00eb136
 
 var {
   StyleSheet,
@@ -179,11 +175,14 @@ class Main extends React.Component{
 			  <Text style = {styles.welcome} > Welcome to Journal Buddy! </Text>
 			  <TextInput
 			    style = {styles.usernameBox}
+
 			    value = {this.state.username}
+			    placeholder = " username"
 			    onChange = {this.handleChangeUsername.bind(this)} />
 			  <TextInput
 			    style = {styles.password}
 			    value = {this.state.toDisplay}
+			    placeholder = " password"
 			    onChange = {this.handleChangePassword.bind(this)} /> 
 			  <TouchableHighlight
 			    style = {styles.submit}
