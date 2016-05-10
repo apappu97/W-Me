@@ -2,7 +2,8 @@
 
 var React = require('react-native');
 var CheckIn1 = require('./CheckIn1');
-var Profile = require('./Profile')
+var Profile = require('./Profile');
+var api = require('./api');
 
 var {
   StyleSheet,
@@ -141,6 +142,19 @@ class Main extends React.Component{
 			username: ''
 		});
 	}
+
+	navigateToSignUp(){
+		this.props.navigator.push({
+			title: 'Signup',
+			Component: 'Signup',
+			passProps: {userInfo: this.props}
+		})
+	}
+	checkAuthentication().then((value) => {
+		if(!value){
+			this.navigateToSignUp.bind(this);
+		}
+	})
 
 	render(){
 		var showErr = (
