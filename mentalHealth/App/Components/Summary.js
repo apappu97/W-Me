@@ -1,4 +1,6 @@
 var React = require('react-native');
+var Friends = require('./Friends');
+var Settings= require('./Settings');
 
 var {
   View,
@@ -49,17 +51,71 @@ var styles = StyleSheet.create({
 		fontSize: 12,
 		lineHeight: 14,
 		backgroundColor: 'transparent'
-	} 
+	},
+	button: {
+		width: 157,
+		height: 14,
+		color: "#fff",
+		fontFamily: 'Avenir',
+		alignSelf: 'center',
+		textAlign: 'center',
+		fontSize: 12,
+		lineHeight: 14,
+		marginTop: 8
+	}, 
+	submit: {
+		/* Style for "Login" button */
+		width: 207,
+		height: 33,
+		backgroundColor: "#5ca6f2",
+		borderRadius: 16,
+		alignSelf: 'center',
+		marginTop: 10
+	}
 });
-
 class Summary extends React.Component{
+	
+	reachOut(){
+		this.props.navigator.push({
+			component: Friends,
+			title: 'Reach Out',
+			//passProps: { 
+			//	userInfo: this.props.userInfo
+			//}
+		});
+	}
+	getDailyTip(){
+		this.props.navigator.push({
+			component: Settings,
+			title: 'Get Daily Tip',
+			//passProps: { 
+				//userInfo: this.props.userInfo
+			//}
+		});
+	}
 	render(){
 		return(
-		  <View style = {styles.container}> 
-		    <Text> Yo! </Text> 
+		  <View style = {styles.mainContainer}> 
+		    <Image style={styles.image} source={require("../images/bindings.png")}>
+		    <Text style = {styles.welcome}> Weekly Report John Doe </Text>
+		    
+		    
+		    <Text style = {styles.welcome}> Looks like youve had a rough week  </Text>
+		    <TouchableHighlight
+		    	style = {styles.submit}
+				onPress = {this.reachOut.bind(this)}
+				underlayColor = '#f1eeee'>
+				<Text style={styles.button}>Reach Out To Friends</Text>
+			</TouchableHighlight>			
+			<TouchableHighlight
+				style = {styles.submit}
+				onPress = {this.getDailyTip.bind(this)}
+				underlayColor = '#f1eeee'>
+				<Text style={styles.button}> Daily Tip</Text>
+			</TouchableHighlight>
+		</Image>
 		  </View>
-		);
+		)
 	}
-}
-
+};
 module.exports = Summary;

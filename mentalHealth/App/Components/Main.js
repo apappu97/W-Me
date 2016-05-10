@@ -1,7 +1,8 @@
 // Welcome to Journal Buddy!
 
 var React = require('react-native');
-var CheckIn1 = require('./CheckIn1');
+//var CheckIn1 = require('./CheckIn1');
+var Profile = require('./Profile')
 
 var {
   StyleSheet,
@@ -128,8 +129,8 @@ class Main extends React.Component{
 		});
 		// handle login logic
 		this.props.navigator.push({
-			title: 'Check In',// username
-			component: CheckIn1,//
+			title: 'Profile',// username
+			component: Profile,//
 			passProps: {userInfo: this.props}// whatever response is
 		});
 

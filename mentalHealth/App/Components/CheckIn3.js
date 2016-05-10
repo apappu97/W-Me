@@ -1,5 +1,6 @@
 var React = require('react-native');
-var Summary = require('./Summary');
+var Settings = require('./Settings');
+var Profile = require('./Profile');
 
 var {
   View,
@@ -56,8 +57,8 @@ var styles = StyleSheet.create({
 class CheckIn3 extends React.Component{
 	submitScore(score){
 		this.props.navigator.push({
-			component: Summary,
-			title: 'Summary',
+			component: Settings,
+			title: 'Settings',
 			passProps: { 
 				userInfo: this.props.userInfo
 			}

@@ -1,5 +1,7 @@
+
 var React = require('react-native');
 var Friends = require('./Friends');
+
 var {
   View,
   Text,
@@ -9,7 +11,6 @@ var {
   TouchableHighlight,
   ActivityIndicatorIOS,
 } = React;
-
 var styles = StyleSheet.create({
 	mainContainer: {
 	    flex: 1,
@@ -59,39 +60,59 @@ var styles = StyleSheet.create({
 		marginTop: 10
 	}
 });
-
 class Settings extends React.Component{
-	addFriends(){
+	manageFriends(){
 		this.props.navigator.push({
 			component: Friends,
-			title: 'Add Friends',
+			title: 'Manage Friend Circle',
 			passProps: { 
 				userInfo: this.props.userInfo
 			}
-		})
+		});
+	}
+	changePrivacy(){
+		this.props.navigator.push({
+			component: Privacy,
+			title: 'Privacy Settings',
+			passProps: { 
+				userInfo: this.props.userInfo
+			}
+		});
+	}
+	changeNotifications(){
+		this.props.navigator.push({
+			component: Notifications,
+			title: 'Notification Settings',
+			passProps: { 
+				userInfo: this.props.userInfo
+			}
+		});
 	}
 	render(){
 		return(
-			<View> 
+			<View style = {styles.mainContainer}> 
 			  <Image style={styles.image} source={require("../images/bindings.png")}>
-				  <View style = {styles.mainContainer}>
 				    <TouchableHighlight
 				      style = {styles.submit}
-				      onPress = {this.addFriends.bind(this)}
-				      underlayColor = 'transparent'>
-				        <Text style = {styles.button}> Add Friends </Text>
+				      onPress = {this.manageFriends.bind(this)}
+				      underlayColor = 'f1eeee'>
+				        <Text style = {styles.button}> Manage Friend Circle </Text>
 				    </TouchableHighlight>
-				  </View>		    
 				  <TouchableHighlight
 				      style = {styles.submit}
-				      onPress = {this.addFriends.bind(this)}
-				      underlayColor = 'transparent'>
-				        <Text style = {styles.button}> View Profile </Text>
+				      onPress = {this.changePrivacy.bind(this)}
+				      underlayColor = 'fleeee'>
+				        <Text style = {styles.button}> Privacy Settings </Text>
+				    </TouchableHighlight>
+				  <TouchableHighlight
+				      style = {styles.submit}
+				      onPress = {this.changeNotifications.bind(this)}
+				      underlayColor = 'fleeee'>
+				        <Text style = {styles.button}> Notification Settings </Text>
 				    </TouchableHighlight>
 			  </Image>
 			</View>
 		)
 	}
 }
-
 module.exports = Settings;
