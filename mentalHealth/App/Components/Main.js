@@ -134,7 +134,7 @@ class Main extends React.Component{
 		this.props.navigator.push({
 			title: 'Profile',// username
 			component: Profile,//
-			passProps: {userInfo: this.props}// whatever response is
+			passProps: {userInfo: this.props.userInfo}// whatever response is
 		});
 
 		// reset
@@ -155,7 +155,7 @@ class Main extends React.Component{
 		this.props.navigator.push({
 			title: 'Sign Up',// username
 			component: Signup,//
-			passProps: {userInfo: this.props}// whatever response is
+			passProps: {userInfo: this.props.userInfo}// whatever response is
 		});
 
 		// reset
