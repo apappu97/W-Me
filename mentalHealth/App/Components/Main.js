@@ -3,11 +3,16 @@
 var React = require('react-native');
 var CheckIn1 = require('./CheckIn1');
 <<<<<<< HEAD
+<<<<<<< HEAD
 var Profile = require('./Profile');
 var Signup = require('./Signup');
 =======
 var Profile = require('./Profile')
 >>>>>>> ec7e7185e3276b1f45d54aa697e3b31ac00eb136
+=======
+var Profile = require('./Profile');
+var api = require('./api');
+>>>>>>> aneesh
 
 var {
   StyleSheet,
@@ -147,6 +152,7 @@ class Main extends React.Component{
 		});
 	}
 
+<<<<<<< HEAD
 	handleSignup(){
 		// load spinner
 		this.setState({
@@ -167,6 +173,20 @@ class Main extends React.Component{
 		});
 	}
 
+=======
+	navigateToSignUp(){
+		this.props.navigator.push({
+			title: 'Signup',
+			Component: 'Signup',
+			passProps: {userInfo: this.props}
+		})
+	}
+	checkAuthentication().then((value) => {
+		if(!value){
+			this.navigateToSignUp.bind(this);
+		}
+	})
+>>>>>>> aneesh
 
 	render(){
 		var showErr = (
