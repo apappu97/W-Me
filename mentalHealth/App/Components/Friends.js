@@ -121,36 +121,36 @@ class Friends extends React.Component{
 
 	render(){
 		return(
-			<View style = {styles.mainContainer>
-				<Image style={styles.image} source={require("../images/bindings.png")}>
-					<Text style={styles.welcome}> Add Family and Friends </Text>
+			<View> //style = {styles.mainContainer}>
+				//<Image style={styles.image} source={require("../images/bindings.png")}>
+					//<Text style={styles.welcome}> Add Family and Friends </Text>
 
-					<View style={styles.container1}>
-					<Text> Name </Text>
-					<TextInput
-						style={styles.textInput}
-						value={this.state.friendName}
-						onChange={this.handleName.bind(this)} />
-					</View>
+					// <View style={styles.container1}>
+					// <Text> Name </Text>
+					// <TextInput
+					// 	style={styles.textInput}
+					// 	value={this.state.friendName}
+					// 	onChange={this.handleName.bind(this)} />
+					// </View>
 
-					<View style={styles.container2}>
-					<Text> Number </Text>
-					<TextInput
-						style={styles.textInput}
-						keyboardType = 'numeric'
-						value={this.state.friendNumber}
-						onChange={this.handleNumber.bind(this)} />
-					</View>
+					// <View style={styles.container2}>
+					// <Text> "Number" </Text>
+					// <TextInput
+					// 	style={styles.textInput}
+					// 	keyboardType = 'numeric'
+					// 	value={this.state.friendNumber}
+					// 	onChange={this.handleNumber.bind(this)} />
+					// </View>
 
-					<TouchableHighlight
-						style={styles.submit}
-						underlayColor = '#f1eeee'
-						onPress = {this.addFriends.bind(this)}
-						<Text style = {styles.button}> Add Friend</Text>
-					</TouchableHighlight>
-				</Image>
+					// <TouchableHighlight
+					// 	style={styles.submit}
+					// 	underlayColor = '#f1eeee'
+					// 	onPress = {this.addFriends.bind(this)}
+					// 	<Text style = {styles.button}> Add Friend</Text>
+					// </TouchableHighlight>
+				//</Image>
 			 </View>
 		)
 	}
-}
+};
 module.exports = Friends;
