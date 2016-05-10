@@ -1,4 +1,4 @@
-//var React = require('react-native');
+var React = require('react-native');
 var Firebase = require("firebase");
 
 var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
@@ -6,328 +6,331 @@ var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
 var usermapRef = ref.child("user_map");
 var usersRef = ref.child("users");
 
-
 var {
     AsyncStorage
 } = React;
 
-/*
-Routes
+var _checkAuthentication = function(){
+        return _getUsername();
+};
 
-User:https://socialgoodmh.firebaseio.com/users/apappu
-
-
-JSON Example:
-
-{
-    "score": 0,
-    "days": 0,
-    "running_score": [],
-    "friends": []
-}
-
-auth
-
-If auth is ever null, you need to redirect to the login screen.
-The cases in which it would be null would be either authentication
-didn't work, or the auth token expired. Use the login function to
-get a new auth payload
-
-TODO: https://www.firebase.com/docs/web/guide/user-auth.html
-
-*/
-
-
-var auth = getAuthToken();
-
-
-
-console.log(createUser("apappu@stanford.edu", "socialgood", "Aneesh"));
-
-
-/*
-createUser is a method that takes in a username and a password and returns
-a boolean value that returns true if everything went ok, and false if there
-was an error. You want to take this call and if it returns true to use the login
-function to get an authentication token.
-
-make sure you pass in login to the callback so the user doesn't have to relogin in
-
-TODO: Figure out what to do about storing auth tokens locally to ReactNative
-
-*/
-
-function checkAuthentication(){
-    getUsername().then((storedUsername) => {
-        getPassword().then((storedPassword) => {
-            if(username == undefined || password == undefined){
-                return false;
-            } else{
-                return true;
-            }
-        })
-    })
-}
-
-function createUser(username, password, firstname) {
-    if (typeof username != "string" || typeof password != "string") {
-            throw "Username and/or password isn't a string";
-    }
-    ref.createUser({
-        email    : username,
-        password : password
-    }, function(error, userData) {
-        if (error) {
-            console.log("Error creating user:", error);
-            return false;
-        } else {
-            console.log("Successfully created user account with uid:", userData.uid);
-            auth = userData;
-            AsyncStorage.setItem("username", username).then((value) => {
-                AsyncStorage.setItem("password", password).then(() => {
-                    // credentials updated, login now
-                    login(username, password, setUpUser(firstname, username));
-                })
-            })
-
+var _createUser = function(username, password, firstname) {
+        if (typeof username != "string" || typeof password != "string") {
+                throw "Username and/or password isn't a string";
         }
-    });
-}
+        ref.createUser({
+            email    : username,
+            password : password
+        }, function(error, userData) {
+            if (error) {
+                console.log("Error creating user:", error);
+                return false;
+            } else {
+                console.log("Successfully created user account with uid:", userData.uid);
+                _auth = userData;
+                AsyncStorage.setItem("username", username).then((value) => {
+                    AsyncStorage.setItem("password", password).then(() => {
+                        // credentials updated, login now
+                        _login(username, password, setUpUser(firstname, username));
+                    })
+                })
 
-// only call this once, it's called when a user is created
-function setUpUser(firstname, email) {
-    if (auth == null) {
-        console.log("Isn't logged in");
-        return false;
-    }
-    var localUserRef = usersRef.child(auth.uid);
-    localUserRef.set({
+            }
+        });
+};
+
+var _setUpUser = function(firstname, email) {
+        if (auth == null) {
+            console.log("Isn't logged in");
+            return false;
+        }
+        var localUserRef = usersRef.child(auth.uid);
+        localUserRef.set({
+            "score": 0,
+            "days": 0,
+        }, function() {
+            console.log("set up a user");
+        });
+        var user_map = ref.child("user_map");
+        user_map.push({
+            name : firstname,
+            uid : auth.uid,
+            email: email
+        });
+};
+
+var _getUsername = function(){
+        return AsyncStorage.getItem("username");
+};
+
+var _getPassword = function(){
+        return AsyncStorage.getItem("password");
+};
+
+var _storeAuthToken = function(authToken){
+        return AsyncStorage.setItem("authToken", authToken);
+};
+
+var _getAuthToken = function(){
+        return AsyncStorage.getItem("authToken");
+};
+
+var _login = function(username, password, callback) {
+        ref.authWithPassword({
+            email    : username,
+            password : password
+        }, function(error, authData) {
+            if (error) {
+                console.log("Login Failed!", error);
+                switch (error.code) {
+                    case "INVALID_EMAIL":
+                        console.log("The specified user account email is invalid.");
+                        break;
+                    case "INVALID_PASSWORD":
+                        console.log("The specified user account password is incorrect.");
+                        break;
+                    case "INVALID_USER":
+                        console.log("The specified user account does not exist.");
+                        break;
+                    default:
+                        console.log("Error logging user in:", error);
+                }
+            } else {
+                console.log("Authenticated successfully with payload:", authData);
+                auth = authData;
+                storeAuthToken(auth).then(() => {
+                    if (typeof callback === "function") {
+                        callback();
+                    }
+                })
+            }
+        });
+};
+
+var _isThereData = function() {
+        usersRef.on("value", function(snapshot) {
+            console.log(snapshot.val());
+            return true;
+        }, function (errorObject) {
+            console.log("The read failed: " + errorObject.code);
+            return false;
+        });
+};
+
+
+var _getUserInfo = function(callback) {
+        if (auth == null) {
+            console.log("Isn't logged in");
+            return false;
+        }
+        localUserRef = usersRef.child(auth.uid);
+        var userInfo = null;
+        localUserRef.once("value", function(data) {
+            userInfo = data.val();
+        }, function() {
+            if (typeof callback === 'function')
+            callback(userInfo);
+        });
+
+};
+
+var _setScore = function(todayScore) {
+        if (auth == null) {
+            console.log("Isn't logged in");
+            return false;
+        }
+        var userInfo = getUserInfo();
+        // could optimize out vars, will do later, much more readable this way
+        if (userInfo) {
+            var localUserRef = usersRef.child(auth.uid);
+            var score = userInfo.score;
+            var days = userInfo.days + 1;
+            score += todayScore;
+            localUserRef.push({running_score:todayScore});
+            localUserRef.update({
+                "score": score,
+                "days": days,
+                "running_score": runningScore
+            });
+        }
+
+};
+
+var _getAverageScore = function() {
+        if (auth == null) {
+            console.log("Isn't logged in");
+            return false;
+        }
+        var userInfo = getUserInfo();
+        if (userInfo) {
+            return userInfo.score / userInfo.days;
+        }
+};
+
+var _getWeeklyScore = function() {
+        if (auth == null) {
+            console.log("Isn't logged in");
+            return false;
+        }
+        var userInfo = getUserInfo();
+        if (userInfo) {
+            return userInfo.running_score.slice(Math.max(arr.length - 7, 0), 7);
+        }
+};
+
+var _getMonthlyScore = function() {
+        if (auth == null) {
+            console.log("Isn't logged in");
+            return false;
+        }
+        getUserInfo(function(userInfo) {
+            if (userInfo) {
+                return userInfo.running_score.slice(Math.max(arr.length - 31, 0), 31);
+            }
+        });
+};
+
+var _getAuthID = function(email){
+        if (auth == null) {
+            console.log("Isn't logged in");
+            return false;
+        }
+        // var localUserRef = u
+};
+
+var _addFriends = function(email) {
+        if (auth == null) {
+            console.log("Isn't logged in");
+            return false;
+        }
+        // test to figure out if duplicate friends?
+        usermapRef.orderByChild("email").equalTo("josh.j.singer@gmail.com").limitToFirst(1).once('value', function (obj) {
+            obj.forEach(function(friendObj) {
+            {
+                console.log("friendObj\n");
+                console.log(friendObj + "\n");
+                var name = friendObj.child("name").val();
+                var email = friendObj.child("email").val();
+                var friendAuthID = friendObj.child("uid").val();
+                console.log("name: " + name + "\nemail: " + email + "\nfriendid:" + friendAuthID);
+                console.log("ADD FRIENDS WAS QUERIED");
+                var localUserRef = usersRef.child(auth.uid);
+                localUserRef.child("friends").push({
+                    email: email,
+                    name: name,
+                    uid: friendAuthID
+                }, function () {
+                    console.log("friend added")
+                });
+            }});
+        });
+};
+
+var _getListOfFriends = function() {
+        if (auth == null) {
+            console.log("Isn't logged in");
+            return false;
+        }
+        var listOfFriends = [];
+        usersRef.child(auth.uid).orderByChild("friends").once('value', function(obj) {
+            obj.forEach(function(friend) {
+                console.log(friend);
+                listOfFriends.push(friend.val());
+            });
+            console.log(listOfFriends);
+        });
+};
+
+var api;
+
+var _auth = _getAuthToken();
+
+// });
+
+    api = {
+    /*
+    Routes
+
+    User:https://socialgoodmh.firebaseio.com/users/apappu
+
+
+    JSON Example:
+
+    {
         "score": 0,
         "days": 0,
-    }, function() {
-        console.log("set up a user");
-    });
-    var user_map = ref.child("user_map");
-    user_map.push({
-        name : firstname,
-        uid : auth.uid,
-        email: email
-    });
-}
-
-function getUsername(){
-    return AsyncStorage.getItem("username");
-}
-
-function getPassword(){
-    return AsyncStorage.getItem("password");
-}
-
-function storeAuthToken(authToken){
-    return AsyncStorage.setItem("authToken", authToken);
-}
-
-function getAuthToken(){
-    AsyncStorage.getItem("authToken", authToken).then((value) =>{
-        return value;
-    });
-}
-
-function login(username, password, callback) {
-    ref.authWithPassword({
-        email    : username,
-        password : password
-    }, function(error, authData) {
-        if (error) {
-            console.log("Login Failed!", error);
-            switch (error.code) {
-                case "INVALID_EMAIL":
-                    console.log("The specified user account email is invalid.");
-                    break;
-                case "INVALID_PASSWORD":
-                    console.log("The specified user account password is incorrect.");
-                    break;
-                case "INVALID_USER":
-                    console.log("The specified user account does not exist.");
-                    break;
-                default:
-                    console.log("Error logging user in:", error);
-            }
-        } else {
-            console.log("Authenticated successfully with payload:", authData);
-            auth = authData;
-            storeAuthToken(auth).then(() => {
-                if (typeof callback === "function") {
-                    callback();
-                }
-            })
-        }
-    });
-}
-
-function isThereData() {
-    usersRef.on("value", function(snapshot) {
-        console.log(snapshot.val());
-        return true;
-    }, function (errorObject) {
-        console.log("The read failed: " + errorObject.code);
-        return false;
-    });
-}
-
-
-// TODO: optimize so no isThereData/getuserinfo call because it uses too much internet
-
-// hefty call?
-
-function getUserInfo(callback) {
-    if (auth == null) {
-        console.log("Isn't logged in");
-        return false;
-    }
-    localUserRef = usersRef.child(auth.uid);
-    var userInfo = null;
-    localUserRef.once("value", function(data) {
-        userInfo = data.val();
-    }, function() {
-        if (typeof callback === 'function')
-        callback(userInfo);
-    });
-
-}
-
-function setScore(todayScore) {
-    if (auth == null) {
-        console.log("Isn't logged in");
-        return false;
-    }
-    var userInfo = getUserInfo();
-    // could optimize out vars, will do later, much more readable this way
-    if (userInfo) {
-        var localUserRef = usersRef.child(auth.uid);
-        var score = userInfo.score;
-        var days = userInfo.days + 1;
-        score += todayScore;
-        localUserRef.push({running_score:todayScore});
-        localUserRef.update({
-            "score": score,
-            "days": days,
-            "running_score": runningScore
-        });
+        "running_score": [],
+        "friends": []
     }
 
-}
+    auth
 
-function getAverageScore() {
-    if (auth == null) {
-        console.log("Isn't logged in");
-        return false;
-    }
-    var userInfo = getUserInfo();
-    if (userInfo) {
-        return userInfo.score / userInfo.days;
-    }
-}
+    If auth is ever null, you need to redirect to the login screen.
+    The cases in which it would be null would be either authentication
+    didn't work, or the auth token expired. Use the login function to
+    get a new auth payload
 
-function getAverageScore() {
-    if (auth == null) {
-        console.log("Isn't logged in");
-        return false;
-    }
-    var userInfo = getUserInfo();
-    if (userInfo) {
-        return userInfo.score / userInfo.days;
-    }
-}
+    TODO: https://www.firebase.com/docs/web/guide/user-auth.html
 
-function getWeeklyScore() {
-    if (auth == null) {
-        console.log("Isn't logged in");
-        return false;
-    }
-    var userInfo = getUserInfo();
-    if (userInfo) {
-        return userInfo.running_score.slice(Math.max(arr.length - 7, 0), 7);
-    }
-}
+    */
 
-function getMonthlyScore() {
-    if (auth == null) {
-        console.log("Isn't logged in");
-        return false;
-    }
-    getUserInfo(function(userInfo) {
-        if (userInfo) {
-            return userInfo.running_score.slice(Math.max(arr.length - 31, 0), 31);
-        }
-    });
-}
+        checkAuthentication: _checkAuthentication,
+        createUser: _createUser,
+        setUpUser: _setUpUser,
+        getUsername: _getUsername,
+        getPassword: _getPassword,
+        storeAuthToken: _storeAuthToken,
+        getAuthToken: _getAuthToken,
+        login: _login,
+        isThereData: _isThereData,
+        getUserInfo: _getUserInfo,
+        setScore: _setScore,
+        getAverageScore: _getAverageScore,
+        getWeeklyScore: _getWeeklyScore,
+        getMonthlyScore: _getMonthlyScore,
+        getAuthID: _getAuthID,
+        addFriends: _addFriends,
+        getListOfFriends: _getListOfFriends,
+        auth: _auth
 
-function getAuthID(email) {
-    if (auth == null) {
-        console.log("Isn't logged in");
-        return false;
-    }
-    // var localUserRef = u
-}
+    /*
+    createUser is a method that takes in a username and a password and returns
+    a boolean value that returns true if everything went ok, and false if there
+    was an error. You want to take this call and if it returns true to use the login
+    function to get an authentication token.
 
-// use this for adding friends: d
-function addFriends(email) {
-    if (auth == null) {
-        console.log("Isn't logged in");
-        return false;
-    }
-    // test to figure out if duplicate friends?
-    usermapRef.orderByChild("email").equalTo("josh.j.singer@gmail.com").limitToFirst(1).once('value', function (obj) {
-        obj.forEach(function(friendObj) {
-        {
-            console.log("friendObj\n");
-            console.log(friendObj + "\n");
-            var name = friendObj.child("name").val();
-            var email = friendObj.child("email").val();
-            var friendAuthID = friendObj.child("uid").val();
-            console.log("name: " + name + "\nemail: " + email + "\nfriendid:" + friendAuthID);
-            console.log("ADD FRIENDS WAS QUERIED");
-            var localUserRef = usersRef.child(auth.uid);
-            localUserRef.child("friends").push({
-                email: email,
-                name: name,
-                uid: friendAuthID
-            }, function () {
-                console.log("friend added")
-            });
-        }});
-    });
-}
+    make sure you pass in login to the callback so the user doesn't have to relogin in
 
-function getListOfFriends() {
-    if (auth == null) {
-        console.log("Isn't logged in");
-        return false;
-    }
-    var listOfFriends = [];
-    usersRef.child(auth.uid).orderByChild("friends").once('value', function(obj) {
-        obj.forEach(function(friend) {
-            console.log(friend);
-            listOfFriends.push(friend.val());
-        });
-        console.log(listOfFriends);
-    });
-}
+    TODO: Figure out what to do about storing auth tokens locally to ReactNative
 
-/* TODO:  Need to have a call to look at the user_map and
-figure out if a friend exists, then it needs to add them to the list of
-    friends of a person and the person they added, then write the security rule
-    for reading friends
-    then write the security rule to allow looking at another person's score
+    */
 
-    make sure you do a query by child
 
-    also write a getauth event to find out when auth expires, so that the auth
-    var check for null works properly
-    for letting a friend know, we will need to have some code that is executing when the app begins
-    they look through users score and if they are the lowest, they let their friend with the highest score know
-    we will use either react native for push notif or batch[a
-*/
+    // only call this once, it's called when a user is created
 
-// write a method for letting friends know that a person isn't doing well
+    // TODO: optimize so no isThereData/getuserinfo call because it uses too much internet
+
+    // hefty call?
+
+    // use this for adding friends: d
+
+    };
+    module.exports = api;
+
+
+    /* TODO:  Need to have a call to look at the user_map and
+    figure out if a friend exists, then it needs to add them to the list of
+        friends of a person and the person they added, then write the security rule
+        for reading friends
+        then write the security rule to allow looking at another person's score
+
+        make sure you do a query by child
+
+        also write a getauth event to find out when auth expires, so that the auth
+        var check for null works properly
+        for letting a friend know, we will need to have some code that is executing when the app begins
+        they look through users score and if they are the lowest, they let their friend with the highest score know
+        we will use either react native for push notif or batch[a
+    */
+
+    // write a method for letting friends know that a person isn't doing well

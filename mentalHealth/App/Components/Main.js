@@ -145,7 +145,7 @@ class Main extends React.Component{
 		});
 	}
 
-<<<<<<< HEAD
+
 	handleSignup(){
 		// load spinner
 		this.setState({
@@ -165,21 +165,6 @@ class Main extends React.Component{
 			username: ''
 		});
 	}
-
-=======
-	navigateToSignUp(){
-		this.props.navigator.push({
-			title: 'Signup',
-			Component: 'Signup',
-			passProps: {userInfo: this.props}
-		})
-	}
-	checkAuthentication().then((value) => {
-		if(!value){
-			this.navigateToSignUp.bind(this);
-		}
-	})
->>>>>>> aneesh
 
 	render(){
 		var showErr = (
