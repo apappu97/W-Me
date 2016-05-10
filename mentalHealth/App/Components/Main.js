@@ -1,7 +1,7 @@
 // Welcome to Journal Buddy!
 
 var React = require('react-native');
-//var CheckIn1 = require('./CheckIn1');
+var CheckIn1 = require('./CheckIn1');
 var Profile = require('./Profile')
 
 var {
