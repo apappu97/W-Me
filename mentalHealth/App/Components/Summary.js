@@ -1,5 +1,5 @@
 var React = require('react-native');
-var Friends = require('./Friends');
+//var Friends = require('./Friends');
 var Settings= require('./Settings');
 
 var {
@@ -77,7 +77,7 @@ class Summary extends React.Component{
 	
 	reachOut(){
 		this.props.navigator.push({
-			component: Friends,
+			component: Settings,
 			title: 'Reach Out',
 			//passProps: { 
 			//	userInfo: this.props.userInfo

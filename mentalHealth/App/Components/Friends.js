@@ -1,5 +1,6 @@
 var React = require('react-native');
 
+
 var {
   View,
   Text,
@@ -87,26 +88,26 @@ class Friends extends React.Component{
 	constructor(props){
 		super(props);
 		this.state = {
-			friendName = '',
-			friendNumber = ''
-		}
+			friendName: '',
+			friendNumber: ''
+		};
 	}
 
 	handleName(event){
 		this.setState({
-			friendName = event.nativeEvent.text
+			friendName: event.nativeEvent.text
 		})
 	}
 
 	handleNumber(event){
 		this.setState({
-			friendNumber = event.nativeEvent.text
+			friendNumber: event.nativeEvent.text
 		})
 	}
 
 
 	addFriends(){
-		var Settings = require('./Settings');
+		var Settings= require('./Settings');
 
 		//update backend
 		this.props.navigator.push({
@@ -144,11 +145,12 @@ class Friends extends React.Component{
 					<TouchableHighlight
 						style={styles.submit}
 						underlayColor = '#f1eeee'
-						onPress = {this.addFriend.bind(this)}
+						onPress = {this.addFriends.bind(this)}
+						<Text style = {styles.button}> Add Friend</Text>
 					</TouchableHighlight>
 				</Image>
 			 </View>
 		)
 	}
 }
-module.exports = Friends
+module.exports = Friends;

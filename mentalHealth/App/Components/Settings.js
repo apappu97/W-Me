@@ -1,5 +1,5 @@
 var React = require('react-native');
-var Friends = require('./Friends');
+//var Friends = require('./Friends');
 
 var {
   View,
@@ -62,7 +62,7 @@ var styles = StyleSheet.create({
 class Settings extends React.Component{
 	manageFriends(){
 		this.props.navigator.push({
-			component: Friends,
+			component: Summary,
 			title: 'Manage Friend Circle',
 			passProps: { 
 				userInfo: this.props.userInfo
