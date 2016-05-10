@@ -64,7 +64,7 @@ function createUser(username, password, firstname, login) {
         } else {
             console.log("Successfully created user account with uid:", userData.uid);
             auth = userData;
-            login(username, password, firstname, setUpUser(firstname, username));
+            login(username, password, setUpUser(firstname, username));
         }
     });
 }
