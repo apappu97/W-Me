@@ -87,7 +87,7 @@ class CheckIn1 extends React.Component{
 	render(){
 		return(
 			<View style = {styles.mainContainer}> 
-			console.log(this.props.userInfo.username);
+			
 			  <Image style={styles.image} source={require("../images/bindings.png")}>
 				<Text style = {styles.welcome}> How are you feeling today Aneesh? </Text>
 				<View style = {styles.container1}>
