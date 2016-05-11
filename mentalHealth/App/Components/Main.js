@@ -4,8 +4,11 @@ var React = require('react-native');
 var CheckIn1 = require('./CheckIn1');
 var Profile = require('./Profile');
 var Signup = require('./Signup');
+<<<<<<< HEAD
 var api = require('./api');
 
+=======
+>>>>>>> friends
 
 var {
   StyleSheet,
@@ -177,11 +180,14 @@ class Main extends React.Component{
 			  <Text style = {styles.welcome} > Welcome to Journal Buddy! </Text>
 			  <TextInput
 			    style = {styles.usernameBox}
+
 			    value = {this.state.username}
+			    placeholder = " username"
 			    onChange = {this.handleChangeUsername.bind(this)} />
 			  <TextInput
 			    style = {styles.password}
 			    value = {this.state.toDisplay}
+			    placeholder = " password"
 			    onChange = {this.handleChangePassword.bind(this)} /> 
 			  <TouchableHighlight
 			    style = {styles.submit}

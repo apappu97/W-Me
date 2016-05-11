@@ -1,5 +1,5 @@
 var React = require('react-native');
-
+var Settings= require('./Settings');
 
 var {
   View,
@@ -46,7 +46,7 @@ var styles = StyleSheet.create({
 		color: "#043f83",
 		fontFamily: 'Avenir',
 		marginTop: 40,
-		marginBot: 40,
+		marginBottom: 40,
 		alignSelf: 'center',
 		textAlign: 'center',
 		fontSize: 12,
@@ -71,7 +71,7 @@ var styles = StyleSheet.create({
 		backgroundColor: "#5ca6f2",
 		borderRadius: 16,
 		alignSelf: 'center',
-		marginTop: 10
+		
 	},
 	textInput: {
     	height: 50,
@@ -82,7 +82,18 @@ var styles = StyleSheet.create({
     	borderColor: 'white',
     	borderRadius: 8,
     	color: 'white'
-  }
+  },
+  	usernameBox: {
+		/* Style for "email" & "password"*/
+		width: 207,
+		height: 33,
+		alignSelf: 'center',
+		backgroundColor: "#f7f4f4",
+		marginTop: 5,
+		borderWidth: 1,
+		borderColor: "#979797",
+		
+	}
 });
 class Friends extends React.Component{
 	constructor(props){
@@ -107,50 +118,51 @@ class Friends extends React.Component{
 
 
 	addFriends(){
-		var Settings= require('./Settings');
-
-		//update backend
+		var Friends= require('./Friends');
 		this.props.navigator.push({
-			component: Settings,
-			title: 'Settings',
+			component: Friends,
+			title: 'Friends',
 			passProps: {
-				userInfo: this.props.userInfo
+				userInfo: this.props
 			}
 		});
-	}
+
+}
 
 	render(){
 		return(
-			<View> //style = {styles.mainContainer}>
-				//<Image style={styles.image} source={require("../images/bindings.png")}>
-					//<Text style={styles.welcome}> Add Family and Friends </Text>
+			 <View style = {styles.mainContainer}>
+				 <Image style={styles.image} source={require("../images/bindings.png")}>
+					<Text style={styles.welcome}> Add Family and Friends </Text>
 
-					// <View style={styles.container1}>
-					// <Text> Name </Text>
-					// <TextInput
-					// 	style={styles.textInput}
-					// 	value={this.state.friendName}
-					// 	onChange={this.handleName.bind(this)} />
-					// </View>
+					<View style={styles.container1}>
+					
+					<TextInput
+						style={styles.usernameBox}
+						value={this.state.friendName}
+						placeholder = " Name"
+						onChange={this.handleName.bind(this)} />
+					</View>
 
-					// <View style={styles.container2}>
-					// <Text> "Number" </Text>
-					// <TextInput
-					// 	style={styles.textInput}
-					// 	keyboardType = 'numeric'
-					// 	value={this.state.friendNumber}
-					// 	onChange={this.handleNumber.bind(this)} />
-					// </View>
+					<View style={styles.container2}>
+					
+					<TextInput
+						style={styles.usernameBox}
+						keyboardType = 'numeric'
+						value={this.state.friendNumber}
+						placeholder = " Phone Number"
+						onChange={this.handleNumber.bind(this)} />
+					</View>
 
-					// <TouchableHighlight
-					// 	style={styles.submit}
-					// 	underlayColor = '#f1eeee'
-					// 	onPress = {this.addFriends.bind(this)}
-					// 	<Text style = {styles.button}> Add Friend</Text>
-					// </TouchableHighlight>
-				//</Image>
-			 </View>
+					<TouchableHighlight
+						style = {styles.submit}
+						onPress = {this.addFriends.bind(this)}
+						underlayColor = '#f1eeee'>
+						<Text style = {styles.button}> Add Another Friend</Text>
+					</TouchableHighlight>
+				</Image>
+			</View>
 		)
 	}
-};
+}
 module.exports = Friends;

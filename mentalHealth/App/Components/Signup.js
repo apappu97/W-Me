@@ -100,8 +100,8 @@ class Signup extends React.Component{
 		this.state = {
 			username: '',
 			password: '',
-			//email: '',
-			//fullname: '',
+			email: '',
+			fullname: '',
 			isLoading: false,
 			error: false
 		};
@@ -168,16 +168,20 @@ class Signup extends React.Component{
 			  <TextInput
 			    style = {styles.usernameBox}
 			    value = {this.state.fullname}
+			    placeholder = " Full Name"
 			    onChange = {this.handleSetName.bind(this)} />
 			  <TextInput
 			    style = {styles.password}
 			    value = {this.state.email}
+			    placeholder = " Email"
 			    onChange = {this.handleSetEmail.bind(this)} /> 
 			  <TextInput
+			  	placeholder = " Username"
 			    style = {styles.password}
 			    value = {this.state.username}
 			    onChange = {this.handleSetUsername.bind(this)} /> 
 			  <TextInput
+			  placeholder = " Password"
 			    style = {styles.password}
 			    value = {this.state.toDisplay}
 			    onChange = {this.handleSetPassword.bind(this)} /> 

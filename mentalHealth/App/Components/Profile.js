@@ -19,6 +19,7 @@ var styles = StyleSheet.create({
   },
   image: {
     height: 350,
+    alignSelf: 'center'
   },
   buttonText: {
     fontSize: 24,
