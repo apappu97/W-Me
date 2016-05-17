@@ -151,14 +151,13 @@ class Signup extends React.Component{
 					firstname: this.state.fullname
 				}// whatever response is
 			});
+					// reset
+			this.setState({
+				isLoading: false,
+				error: false,
+				username: ''
+			});
 		})
-		
-		// reset
-		this.setState({
-			isLoading: false,
-			error: false,
-			username: ''
-		});
 	}
 
 	render(){

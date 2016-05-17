@@ -18,7 +18,7 @@ var _createUser = function(username, password, firstname, email) {
         if (typeof username != "string" || typeof password != "string") {
                 throw "Username and/or password isn't a string";
         }
-        ref.createUser({
+        return ref.createUser({
             username: username,
             password : password,
             firstname: firstname,
@@ -30,12 +30,13 @@ var _createUser = function(username, password, firstname, email) {
             } else {
                 console.log("Successfully created user account with uid:", userData.uid);
                 _auth = userData;
-                AsyncStorage.setItem("username", username).then((value) => {
-                    AsyncStorage.setItem("password", password).then(() => {
-                        AsyncStorage.setItem("firstname", firstname).then(() => {
-                            AsyncStorage.setItem("email", email).then(() => {
-                                _storeAuthToken(userData.uid).then(() => {
+                return AsyncStorage.setItem("username", username).then((value) => {
+                    return AsyncStorage.setItem("password", password).then(() => {
+                        return AsyncStorage.setItem("firstname", firstname).then(() => {
+                            return AsyncStorage.setItem("email", email).then(() => {
+                               return  _storeAuthToken(userData.uid).then(() => {
                                     // credentials updated, login now
+                                    console.log("about to return login in createUser function");
                                     return _login(email, password, _setUpUser, firstname, email);
                                 })
                             })
@@ -52,21 +53,37 @@ var _setUpUser = function(firstname, email) {
             console.log("Isn't logged in");
             return false;
         }
+        // var localUserRef = usersRef.child(_auth.uid);
+        // localUserRef.set({
+        //     "score": 0,
+        //     "days": 0,
+        // }, function() {
+        //     console.log("set up a user");
+        // });
+        // var user_map = ref.child("user_map");
+        // user_map.push({
+        //     name : firstname,
+        //     uid : _auth.uid,
+        //     email: email
+        // });
         var localUserRef = usersRef.child(_auth.uid);
-        localUserRef.set({
+        return localUserRef.set({
             "score": 0,
             "days": 0,
+            "running_score": 0
         }, function() {
             console.log("set up a user");
-        });
-        var user_map = ref.child("user_map");
-        user_map.push({
-            name : firstname,
-            uid : _auth.uid,
-            email: email
-        });
-        console.log("about to return asyncstorage setitem promise");
-        return AsyncStorage.setItem("setUpUserDone", "1");
+        }).then(() => {
+            var user_map = ref.child("user_map");
+            return user_map.push({
+                name : firstname,
+                uid : _auth.uid,
+                email: email
+            }).then(() => {
+                console.log("about to return asyncstorage setitem promise");
+                return AsyncStorage.setItem("setUpUserDone", "1");
+            })
+        })
 };
 
 var _getUsername = function(){
@@ -90,7 +107,7 @@ var _getAuthToken = function(){
 };
 
 var _login = function(username, password, callback, firstname, email) {
-        ref.authWithPassword({
+        return ref.authWithPassword({
             email    : username,
             password : password
         }, function(error, authData) {
@@ -114,7 +131,7 @@ var _login = function(username, password, callback, firstname, email) {
                 _auth = authData;
                 _storeAuthToken(_auth.uid).then(() => {
                     if (typeof callback === "function") {
-                        console.log("returning setupuser");
+                        console.log("returning setupuser function");
                         return callback(firstname, email);
                     }
                 })
@@ -138,14 +155,24 @@ var _getUserInfo = function(callback) {
             console.log("Isn't logged in");
             return false;
         }
-        localUserRef = usersRef.child(_auth.uid);
-        var userInfo = null;
-        localUserRef.once("value", function(data) {
-            userInfo = data.val();
-        }, function() {
-            if (typeof callback === 'function')
-            callback(userInfo);
-        });
+        return _auth.then((uid) => {
+            localUserRef = usersRef.child(uid);
+            var userInfo = null;
+            localUserRef.once("value", function(data) {
+                userInfo = data.val();
+            }, function() {
+                if (typeof callback === 'function')
+                return callback(userInfo);
+            });
+        })
+        // localUserRef = usersRef.child(_auth.uid);
+        // var userInfo = null;
+        // localUserRef.once("value", function(data) {
+        //     userInfo = data.val();
+        // }, function() {
+        //     if (typeof callback === 'function')
+        //     callback(userInfo);
+        // });
 
 };
 
@@ -154,20 +181,55 @@ var _setScore = function(todayScore) {
             console.log("Isn't logged in");
             return false;
         }
-        var userInfo = _getUserInfo();
+        console.log("this is _auth");
+        console.log(_auth);
+        return _getUserInfo(function(userInfo){
+            if (userInfo) {
+                return _auth.then((uid) => {
+                    console.log("this is uid");
+                    console.log(uid);
+                    var localUserRef = usersRef.child(uid);
+                    var score = userInfo.score;
+                    var days = userInfo.days + 1;
+                    score += todayScore;
+                    localUserRef.push({running_score:todayScore});
+                    return localUserRef.update({
+                        "score": score,
+                        "days": days,
+                        "running_score": score
+                    });
+                })
+            }
+        });
+        //var userInfo = 1;
         // could optimize out vars, will do later, much more readable this way
-        if (userInfo) {
-            var localUserRef = usersRef.child(_auth.uid);
-            var score = userInfo.score;
-            var days = userInfo.days + 1;
-            score += todayScore;
-            localUserRef.push({running_score:todayScore});
-            return localUserRef.update({
-                "score": score,
-                "days": days,
-                "running_score": runningScore
-            });
-        }
+        // if (userInfo) {
+        //     return _auth.then((uid) => {
+        //         console.log("this is uid");
+        //         console.log(uid);
+        //         var localUserRef = usersRef.child(uid);
+        //         var score = userInfo.score;
+        //         var days = userInfo.days + 1;
+        //         score += todayScore;
+        //         localUserRef.push({running_score:todayScore});
+        //         return localUserRef.update({
+        //             "score": score,
+        //             "days": days,
+        //             "running_score": score
+        //         });
+        //     })
+
+            // var localUserRef = usersRef.child(_auth.uid);
+            // var score = userInfo.score;
+            // var days = userInfo.days + 1;
+            // score += todayScore;
+            // localUserRef.push({running_score:todayScore});
+            // return localUserRef.update({
+            //     "score": score,
+            //     "days": days,
+            //     "running_score": runningScore
+            // });
+        //}
 };
 
 var _getAverageScore = function() {

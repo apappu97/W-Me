@@ -57,13 +57,6 @@ var styles = StyleSheet.create({
 class CheckIn3 extends React.Component{
 	submitScore(score){
 		var newScore = this.props.score + score;
-		// this.props.navigator.push({
-		// 	component: Settings,
-		// 	title: 'Settings',
-		// 	passProps: { 
-		// 		userInfo: this.props.userInfo
-		// 	}
-		// });
 		
 		var Profile = require('./Profile');
 		api.setScore(newScore).then(() => {
