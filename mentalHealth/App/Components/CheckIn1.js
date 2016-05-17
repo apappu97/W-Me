@@ -70,11 +70,11 @@ class CheckIn1 extends React.Component{
 			component: CheckIn2,
 			title: 'Check In',
 			passProps: { 
-				userInfo: this.props.userInfo
+				userInfo: this.props.userInfo,
+				score: score
 			}
 		});
 	}
-	
 	changeSettings(){
 		this.props.navigator.push({
 			component: Settings,
@@ -89,7 +89,7 @@ class CheckIn1 extends React.Component{
 			<View style = {styles.mainContainer}> 
 			
 			  <Image style={styles.image} source={require("../images/bindings.png")}>
-				<Text style = {styles.welcome}> How are you feeling today Aneesh? </Text>
+				<Text style = {styles.welcome}> How are you feeling today {this.props.userInfo.firstname}? </Text>
 				<View style = {styles.container1}>
 				    <TouchableHighlight
 					  onPress = {this.submitScore.bind(this, 1)}

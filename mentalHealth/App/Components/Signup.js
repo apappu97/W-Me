@@ -2,7 +2,7 @@
 
 var React = require('react-native');
 var Profile = require('./Profile');
-
+var api = require('./api');
 
 var {
   StyleSheet,
@@ -109,7 +109,6 @@ class Signup extends React.Component{
 
 	handleSetName(event){
 		this.setState({
-
 			fullname: event.nativeEvent.text // gets the input fro what's passed
 		})
 	}
@@ -141,13 +140,19 @@ class Signup extends React.Component{
 		this.setState({
 			isLoading: true
 		});
-		// handle login logic
-		this.props.navigator.push({
-			title: 'Profile',// username
-			component: Profile,//
-			passProps: {userInfo: this.props}// whatever response is
-		});
-
+		api.createUser(this.state.username, this.state.password, this.state.fullname, this.state.email).then(() => {
+			// handle login logic
+			this.props.navigator.push({
+				title: 'Profile',// username
+				component: Profile,//
+				passProps: {
+					userInfo: this.props,
+					username: this.state.username,
+					firstname: this.state.fullname
+				}// whatever response is
+			});
+		})
+		
 		// reset
 		this.setState({
 			isLoading: false,

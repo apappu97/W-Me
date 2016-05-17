@@ -55,11 +55,13 @@ var styles = StyleSheet.create({
 
 class CheckIn2 extends React.Component{
 	submitScore(score){
+		var newScore = this.props.score + score;
 		this.props.navigator.push({
 			component: CheckIn3,
 			title: 'Check In',
 			passProps: { 
-				userInfo: this.props.userInfo
+				userInfo: this.props.userInfo,
+				score: newScore
 			}
 		});
 	}

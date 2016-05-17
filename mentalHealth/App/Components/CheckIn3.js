@@ -1,6 +1,6 @@
 var React = require('react-native');
 var Settings = require('./Settings');
-var Profile = require('./Profile');
+var api = require('./api');
 
 var {
   View,
@@ -56,7 +56,7 @@ var styles = StyleSheet.create({
 
 class CheckIn3 extends React.Component{
 	submitScore(score){
-
+		var newScore = this.props.score + score;
 		// this.props.navigator.push({
 		// 	component: Settings,
 		// 	title: 'Settings',
@@ -64,18 +64,22 @@ class CheckIn3 extends React.Component{
 		// 		userInfo: this.props.userInfo
 		// 	}
 		// });
-
+		
 		var Profile = require('./Profile');
-		this.props.navigator.push({
-			component: Profile,
-			title: 'Profile',
-			passProps: { 
-				userInfo: this.props.userInfo
-			}
-		});
+		api.setScore(newScore).then(() => {
+			this.props.navigator.push({
+				component: Profile,
+				title: 'Profile',
+				passProps: { 
+					userInfo: this.props.userInfo,
+					score: newScore
+				}
+			});
+		})
 	}
 
 	render(){
+		console.log(this.props);
 		return(
 			<View style = {styles.mainContainer}> 
 			  <Image style={styles.image} source={require("../images/bindings.png")}>
