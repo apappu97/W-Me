@@ -1,9 +1,20 @@
 var React = require('react-native');
-var Firebase = require("firebase");
+var firebase = require('firebase');
 
-var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
+// Initialize Firebase
+var config = {
+    apiKey: "AIzaSyB8z82XiUypx0it95DRvmhLJ_M6NX1y95o",
+    authDomain: "socialgoodmh.firebaseapp.com",
+    databaseURL: "https://socialgoodmh.firebaseio.com",
+    storageBucket: "socialgoodmh.appspot.com",
+};
+
+firebase.initializeApp(config);
+
+var ref = firebase.database().ref();
 
 var usermapRef = ref.child("user_map");
+
 var usersRef = ref.child("users");
 
 var {
@@ -36,6 +47,7 @@ var _createUser = function(username, password, firstname, email) {
                             return AsyncStorage.setItem("email", email).then(() => {
                                return  _storeAuthToken(userData.uid).then(() => {
                                     // credentials updated, login now
+
                                     console.log("about to return login in createUser function");
                                     return _login(email, password, _setUpUser, firstname, email);
                                 })
@@ -141,7 +153,7 @@ var _login = function(username, password, callback, firstname, email) {
 
 var _isThereData = function() {
         usersRef.on("value", function(snapshot) {
-            console.log(snapshot.val());
+            console.log(snapshot.val);
             return true;
         }, function (errorObject) {
             console.log("The read failed: " + errorObject.code);
@@ -155,15 +167,20 @@ var _getUserInfo = function(callback) {
             console.log("Isn't logged in");
             return false;
         }
+        console.log("getuserinfo first");
         return _auth.then((uid) => {
             localUserRef = usersRef.child(uid);
             var userInfo = null;
+            console.log("getuserinfo second");
             localUserRef.once("value", function(data) {
-                userInfo = data.val();
-            }, function() {
-                if (typeof callback === 'function')
+                userInfo = data.val;
+                console.log(userInfo);
                 return callback(userInfo);
-            });
+            }, function(userInfo) {
+                    console.log("getuserinfo third");
+                    
+                }  
+            );
         })
         // localUserRef = usersRef.child(_auth.uid);
         // var userInfo = null;
@@ -181,24 +198,27 @@ var _setScore = function(todayScore) {
             console.log("Isn't logged in");
             return false;
         }
-        console.log("this is _auth");
-        console.log(_auth);
         return _getUserInfo(function(userInfo){
             if (userInfo) {
+                console.log("we're hitting something");
                 return _auth.then((uid) => {
                     console.log("this is uid");
                     console.log(uid);
                     var localUserRef = usersRef.child(uid);
+                    var historyRef = usersRef.child(uid).child("history");
                     var score = userInfo.score;
                     var days = userInfo.days + 1;
                     score += todayScore;
-                    localUserRef.push({running_score:todayScore});
+                    historyRef.push({"todayScore":todayScore});
                     return localUserRef.update({
                         "score": score,
                         "days": days,
                         "running_score": score
                     });
                 })
+            }
+            else {
+                console.log("shit ain't working");
             }
         });
         //var userInfo = 1;
@@ -248,10 +268,20 @@ var _getWeeklyScore = function() {
             console.log("Isn't logged in");
             return false;
         }
-        var userInfo = getUserInfo();
-        if (userInfo) {
-            return userInfo.running_score.slice(Math.max(arr.length - 7, 0), 7);
-        }
+        return _auth.then((uid) => {
+            var historyRef = usersRef.child(uid).child("history");
+            return new Promise(function(resolve,reject){
+                historyRef.limitToLast(7).once("value", function(snapshot){
+                    resolve(snapshot.val);
+                })
+            })
+            // return historyRef.limitToLast(7).once("value", function(snapshot) {
+            //   console.log(snapshot.val());
+            //     return new Promise(function(resolve, reject){
+            //         resolve(snapshot.val());
+            //     });
+            // });
+        });
 };
 
 var _getMonthlyScore = function() {
@@ -271,7 +301,6 @@ var _getAuthID = function(email){
             console.log("Isn't logged in");
             return false;
         }
-        // var localUserRef = u
 };
 
 var _addFriends = function(email) {
@@ -311,7 +340,7 @@ var _getListOfFriends = function() {
         usersRef.child(auth.uid).orderByChild("friends").once('value', function(obj) {
             obj.forEach(function(friend) {
                 console.log(friend);
-                listOfFriends.push(friend.val());
+                listOfFriends.push(friend.val);
             });
             console.log(listOfFriends);
         });

@@ -70,7 +70,6 @@ class Profile extends React.Component{
   }
 
   render(){
-    console.log(this.props);
     return (
       <View style={styles.container}>
         <Image source= {require("../images/smiley.jpg")} style={styles.image}/>

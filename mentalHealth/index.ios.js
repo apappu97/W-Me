@@ -10,6 +10,7 @@ var React = require('react-native');
 var Signup = require('./App/Components/Signup');
 var api = require('./App/Components/api');
 var Profile = require('./App/Components/Profile');
+const firebase = require("firebase");
 
 var {
   AsyncStorage,
@@ -62,6 +63,7 @@ class mentalHealth extends Component {
   }
 
   render() {
+    //AsyncStorage.clear();
     if(this.state.loaded && this.state.loadedCredentials){
         if(!this.state.authenticated){ // no user
         return(
