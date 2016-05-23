@@ -10,6 +10,7 @@ var {
   TextInput,
   TouchableHighlight,
   ActivityIndicatorIOS,
+  PushNotificationIOS
 } = React;
 
 var styles = StyleSheet.create({
@@ -63,20 +64,25 @@ class CheckIn3 extends React.Component{
 			api.getWeeklyScore().then((history) => {
 				console.log("in checkin3");
 				console.log(history);
+				api.schedulePushNotification("Hello");
 				this.props.navigator.push({
-					component: Profile,
-					title: 'Profile',
-					passProps: { 
+				component: Profile,
+				title: 'Profile',
+				passProps: 
+					{ 
 						userInfo: this.props.userInfo,
-						score: newScore
+						score: newScore,
+						history: history
 					}
 				});
-			})
-		})
+			});
+		});
 	}
 
 	render(){
 		console.log(this.props);
+		console.log("requesting permissions");
+		PushNotificationIOS.requestPermissions();
 		return(
 			<View style = {styles.mainContainer}> 
 			  <Image style={styles.image} source={require("../images/bindings.png")}>

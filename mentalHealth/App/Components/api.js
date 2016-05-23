@@ -1,28 +1,27 @@
 var React = require('react-native');
-var firebase = require('firebase');
+var Firebase = require("firebase");
+// var Promise = require('promise');
 
-// Initialize Firebase
-var config = {
-    apiKey: "AIzaSyB8z82XiUypx0it95DRvmhLJ_M6NX1y95o",
-    authDomain: "socialgoodmh.firebaseapp.com",
-    databaseURL: "https://socialgoodmh.firebaseio.com",
-    storageBucket: "socialgoodmh.appspot.com",
-};
-
-firebase.initializeApp(config);
-
-var ref = firebase.database().ref();
-
+var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
 var usermapRef = ref.child("user_map");
 
 var usersRef = ref.child("users");
 
 var {
-    AsyncStorage
+    AsyncStorage,
+    PushNotificationIOS
 } = React;
 
 var _checkAuthentication = function(){
         return _getUsername();
+};
+
+var _schedulePushNotification = function(text, delay){
+    var details = {
+        fireDate: (new Date(Date.now() + (10 * 1000))).toISOString(),
+        alertBody: text
+    }
+    PushNotificationIOS.scheduleLocalNotification(details);
 };
 
 var _createUser = function(username, password, firstname, email) {
@@ -46,8 +45,6 @@ var _createUser = function(username, password, firstname, email) {
                         return AsyncStorage.setItem("firstname", firstname).then(() => {
                             return AsyncStorage.setItem("email", email).then(() => {
                                return  _storeAuthToken(userData.uid).then(() => {
-                                    // credentials updated, login now
-
                                     console.log("about to return login in createUser function");
                                     return _login(email, password, _setUpUser, firstname, email);
                                 })
@@ -58,6 +55,10 @@ var _createUser = function(username, password, firstname, email) {
 
             }
         });
+};
+
+var _getAuthToken = function(){
+    return AsyncStorage.getItem("authToken");
 };
 
 var _setUpUser = function(firstname, email) {
@@ -114,9 +115,6 @@ var _storeAuthToken = function(authToken){
     return AsyncStorage.setItem("authToken", authToken);
 };
 
-var _getAuthToken = function(){
-    return AsyncStorage.getItem("authToken");
-};
 
 var _login = function(username, password, callback, firstname, email) {
         return ref.authWithPassword({
@@ -173,7 +171,7 @@ var _getUserInfo = function(callback) {
             var userInfo = null;
             console.log("getuserinfo second");
             localUserRef.once("value", function(data) {
-                userInfo = data.val;
+                userInfo = data.val();
                 console.log(userInfo);
                 return callback(userInfo);
             }, function(userInfo) {
@@ -214,6 +212,8 @@ var _setScore = function(todayScore) {
                         "score": score,
                         "days": days,
                         "running_score": score
+                    }).catch((error) => {
+                        console.log(error);
                     });
                 })
             }
@@ -272,7 +272,7 @@ var _getWeeklyScore = function() {
             var historyRef = usersRef.child(uid).child("history");
             return new Promise(function(resolve,reject){
                 historyRef.limitToLast(7).once("value", function(snapshot){
-                    resolve(snapshot.val);
+                    resolve(snapshot.val());
                 })
             })
             // return historyRef.limitToLast(7).once("value", function(snapshot) {
@@ -346,6 +346,11 @@ var _getListOfFriends = function() {
         });
 };
 
+var _updateAuthToken = function(){
+    _auth = _getAuthToken();
+
+}
+
 var api;
 
 var _auth = _getAuthToken();
@@ -397,7 +402,9 @@ var _auth = _getAuthToken();
         getAuthID: _getAuthID,
         addFriends: _addFriends,
         getListOfFriends: _getListOfFriends,
-        auth: _auth
+        auth: _auth,
+        schedulePushNotification: _schedulePushNotification,
+        updateAuthToken: _updateAuthToken
 
     /*
     createUser is a method that takes in a username and a password and returns

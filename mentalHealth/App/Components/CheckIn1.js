@@ -10,6 +10,7 @@ var {
   TextInput,
   TouchableHighlight,
   ActivityIndicatorIOS,
+  PushNotificationIOS
 } = React;
 
 var styles = StyleSheet.create({

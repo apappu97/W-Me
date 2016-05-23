@@ -10,7 +10,8 @@ var {
   NavigatorIOS,
   Image,
   StyleSheet,
-  TouchableHighlight
+  TouchableHighlight,
+  PushNotificationIOS
 } = React;
 
 var styles = StyleSheet.create({
@@ -70,6 +71,7 @@ class Profile extends React.Component{
   }
 
   render(){
+    console.log(this.props);
     return (
       <View style={styles.container}>
         <Image source= {require("../images/smiley.jpg")} style={styles.image}/>

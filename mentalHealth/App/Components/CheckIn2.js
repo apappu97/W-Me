@@ -1,5 +1,6 @@
 var React = require('react-native');
 var CheckIn3 = require('./CheckIn3');
+var api = require('./api');
 
 var {
   View,
@@ -9,6 +10,7 @@ var {
   TextInput,
   TouchableHighlight,
   ActivityIndicatorIOS,
+  PushNotificationIOS
 } = React;
 
 var styles = StyleSheet.create({
@@ -67,6 +69,7 @@ class CheckIn2 extends React.Component{
 	}
 	
 	render(){
+		api.updateAuthToken();
 		return(
 			<View style = {styles.mainContainer}> 
 			  <Image style={styles.image} source={require("../images/bindings.png")}>
