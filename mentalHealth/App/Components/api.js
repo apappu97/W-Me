@@ -84,7 +84,8 @@ var _setUpUser = function(firstname, email, phoneNumber) {
         return localUserRef.set({
             "score": 0,
             "days": 0,
-            "running_score": 0
+            "running_score": 0,
+            "name": firstname
         }, function() {
             console.log("set up a user");
         }).then(() => {
@@ -384,6 +385,7 @@ var _getListOfFriends = function(currUserTotal) {
                 var asyncArray = [];
                 var friendRef = null;
                 console.log(obj.val());
+                console.log(userObj["friends"]);
                 for (key in userObj.friends){
                     friendRef = null;
                     console.log("in loop. ");
