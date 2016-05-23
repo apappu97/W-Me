@@ -1,5 +1,7 @@
 var React = require('react-native');
 var Friends = require('./Friends');
+var Notifications = require('./Notifications');
+
 
 var {
   View,
@@ -13,62 +15,62 @@ var {
 var styles = StyleSheet.create({
 	mainContainer: {
 	    flex: 1,
-	    padding: 30,
 	    marginTop: 65,
-	    flexDirection: 'column',
-	    justifyContent: 'center',
-	    backgroundColor: "#9b9b9b"
+	    
+	    backgroundColor: "white"
   	},
   	image: {
   		width: 285,
 		height: 395,
   	},
-  	settings: {
-  		left: 250
-  	},
-	welcome: {
-		/* Text style for "Welcome to..." */
-		height: 14,
-		color: "#043f83",
-		fontFamily: 'Avenir',
-		marginTop: 40,
-		alignSelf: 'center',
-		textAlign: 'center',
-		fontSize: 12,
-		lineHeight: 14,
-		backgroundColor: 'transparent'
-	}, 
-	button: {
+	buttonText: {
 		width: 157,
-		height: 14,
+		
+		flex: 1,
 		color: "#fff",
 		fontFamily: 'Avenir',
-		alignSelf: 'center',
 		textAlign: 'center',
-		fontSize: 12,
-		lineHeight: 14,
-		marginTop: 8
+		marginTop: 35,
+		fontSize: 18,
 	}, 
-	submit: {
-		/* Style for "Login" button */
-		width: 207,
-		height: 33,
-		backgroundColor: "#5ca6f2",
-		borderRadius: 16,
-		alignSelf: 'center',
-		marginTop: 20
-	},
-		manage: {
-		/* Style for "Login" button */
-		width: 207,
-		height: 33,
-		backgroundColor: "#5ca6f2",
-		borderRadius: 16,
-		alignSelf: 'center',
-		marginTop: 100
-	}
+	  settingsText: {
+    	fontSize: 24,
+    	color: 'black',
+    	alignSelf: 'center'
+  		},
+      settingsBackground: {
+      flexDirection: 'row',
+      alignSelf: 'stretch',
+      justifyContent: 'center',
+      flex:3
+  }
+
 });
 class Settings extends React.Component{
+	makeBackground(btn){
+    			var obj = {
+      flexDirection: 'row',
+      alignSelf: 'stretch',
+      justifyContent: 'center',
+      height: 100,
+      marginTop: 10,
+
+   
+      
+      
+  
+    			}
+    		if(btn === 0){
+      			obj.backgroundColor = '#FFFFFF';
+    		} else if (btn === 1){
+      			obj.backgroundColor = '#F88C1C';
+    		} else  if (btn ===2){
+      			obj.backgroundColor = '#F05A1C';
+    		} else {
+    			obj.backgroundColor = '#D0021B';
+    		}
+    		return obj;
+ 			}
 	manageFriends(){
 		this.props.navigator.push({
 			component: Friends,
@@ -81,7 +83,7 @@ class Settings extends React.Component{
 	changePrivacy(){
 		this.props.navigator.push({
 			component: Privacy,
-			title: 'Privacy Settings',
+			title: 'Account Info',
 			passProps: { 
 				userInfo: this.props.userInfo
 			}
@@ -97,29 +99,24 @@ class Settings extends React.Component{
 		});
 	}
 	render(){
-		return(
-			<View style = {styles.mainContainer}> 
-			
-			  <Image style={styles.image} source={require("../images/bindings.png")}>
+			return(
+				<View style = {styles.mainContainer}> 
+	  			
 				    <TouchableHighlight
-				      style = {styles.manage}
-				      onPress = {this.manageFriends.bind(this)}
-				      underlayColor = 'f1eeee'>
-				        <Text style = {styles.button}> Manage Friend Circle </Text>
+				      style = {this.makeBackground(1)}
+				      onPress = {this.manageFriends.bind(this)}>
+				        <Text style = {styles.buttonText}> Manage Friend Circle </Text>
 				    </TouchableHighlight>
 				  <TouchableHighlight
-				      style = {styles.submit}
-				      onPress = {this.changePrivacy.bind(this)}
-				      underlayColor = 'fleeee'>
-				        <Text style = {styles.button}> Privacy Settings </Text>
+				      style = {this.makeBackground(2)}
+				      onPress = {this.changePrivacy.bind(this)}>
+				        <Text style = {styles.buttonText}> Personal Info </Text>
 				    </TouchableHighlight>
 				  <TouchableHighlight
-				      style = {styles.submit}
-				      onPress = {this.changeNotifications.bind(this)}
-				      underlayColor = 'fleeee'>
-				        <Text style = {styles.button}> Notification Settings </Text>
+				      style = {this.makeBackground(3)}
+				      onPress = {this.changeNotifications.bind(this)}>
+				        <Text style = {styles.buttonText}> Notification Settings </Text>
 				    </TouchableHighlight>
-			  </Image>
 			</View>
 		)
 	}

@@ -19,11 +19,11 @@ var styles = StyleSheet.create({
 	    marginTop: 65,
 	    flexDirection: 'column',
 	    justifyContent: 'center',
-	    backgroundColor: "#9b9b9b"
+	    backgroundColor: "white"
   	},
   	image: {
-  		width: 285,
-		height: 395,
+  		width: 140,
+		height: 195,
   	},
   	container1: {
   		flex: 1,
@@ -88,7 +88,6 @@ class CheckIn1 extends React.Component{
 		return(
 			<View style = {styles.mainContainer}> 
 			
-			  <Image style={styles.image} source={require("../images/bindings.png")}>
 				<Text style = {styles.welcome}> How are you feeling today Aneesh? </Text>
 				<View style = {styles.container1}>
 				    <TouchableHighlight
@@ -121,7 +120,7 @@ class CheckIn1 extends React.Component{
 					<TouchableHighlight
 					  onPress = {this.submitScore.bind(this, 6)}
 					  underlayColor = '#f1eeee'>
-					    <Image source = {require("../images/sad.png")} />
+					    <Image source = {require("../images/Happiest.png")} />
 					</TouchableHighlight>
 				</View>
 				<View style = {styles.container3}>
@@ -131,7 +130,7 @@ class CheckIn1 extends React.Component{
 				      <Image style = {styles.settings} source = {require("../images/setting.png")} />
 				  </TouchableHighlight>
 				</View>
-			  </Image>
+			  
 			</View>
 		)
 	}

@@ -25,7 +25,8 @@ var styles = StyleSheet.create({
     fontSize: 24,
     color: 'white',
     alignSelf: 'center'
-  }
+  },
+
 });
 
 class Profile extends React.Component{

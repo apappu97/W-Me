@@ -53,7 +53,8 @@ var styles = StyleSheet.create({
 		alignSelf: 'center',
 		textAlign: 'center',
 		fontSize: 12,
-		lineHeight: 14
+		lineHeight: 14,
+		marginBottom: 10
 	}, 
 	loginText: {
 		width: 157,
@@ -102,6 +103,7 @@ class Signup extends React.Component{
 			password: '',
 			email: '',
 			fullname: '',
+			number: '',
 			isLoading: false,
 			error: false
 		};
@@ -116,6 +118,11 @@ class Signup extends React.Component{
 	handleSetEmail(event){
 		this.setState({
 			email: event.nativeEvent.text // gets the input fro what's passed
+		})
+	}
+	handleSetNumber(event){
+		this.setState({
+			number: event.nativeEvent.number
 		})
 	}
 	handleSetUsername(event){
@@ -163,18 +170,25 @@ class Signup extends React.Component{
 
 		return (
 			<View style = {styles.mainContainer}>
-			  
-			  <Text style = {styles.welcome} > Create An Account </Text>
+
+		      <Image style={styles.image} source={require("../images/journal.jpg")}/>
+			  <Text style = {styles.welcome} > Welcome to Journal Buddy! </Text>
 			  <TextInput
 			    style = {styles.usernameBox}
 			    value = {this.state.fullname}
-			    placeholder = " Full Name"
+			    placeholder = " First Name"
 			    onChange = {this.handleSetName.bind(this)} />
 			  <TextInput
 			    style = {styles.password}
 			    value = {this.state.email}
 			    placeholder = " Email"
 			    onChange = {this.handleSetEmail.bind(this)} /> 
+			    <TextInput
+			  placeholder = " Phone Number"
+			  	keyboardType = 'number-pad'
+			    style = {styles.password}
+			    value = {this.state.toDisplay}
+			    onChange = {this.handleSetPassword.bind(this)} /> 
 			  <TextInput
 			  	placeholder = " Username"
 			    style = {styles.password}
@@ -185,6 +199,7 @@ class Signup extends React.Component{
 			    style = {styles.password}
 			    value = {this.state.toDisplay}
 			    onChange = {this.handleSetPassword.bind(this)} /> 
+			 
 			  <TouchableHighlight
 			    style = {styles.submit}
 			    onPress = {this.handleSubmit.bind(this)}

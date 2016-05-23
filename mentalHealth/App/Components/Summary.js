@@ -1,6 +1,8 @@
 var React = require('react-native');
 var Friends = require('./Friends');
 var Settings= require('./Settings');
+var WebView = require('./WebView');
+
 
 var {
   View,
@@ -10,16 +12,17 @@ var {
   TextInput,
   TouchableHighlight,
   ActivityIndicatorIOS,
+  WebView
 } = React;
 
 var styles = StyleSheet.create({
 	mainContainer: {
 	    flex: 1,
-	    padding: 30,
+	    
 	    marginTop: 65,
 	    flexDirection: 'column',
 	    justifyContent: 'center',
-	    backgroundColor: "#9b9b9b"
+	    backgroundColor: "white"
   	},
   	image: {
   		width: 285,
@@ -71,7 +74,25 @@ var styles = StyleSheet.create({
 		borderRadius: 16,
 		alignSelf: 'center',
 		marginTop: 10
-	}
+	},
+
+	summaryButtons:{
+	  flexDirection: 'row',
+      alignSelf: 'stretch',
+      justifyContent: 'center',
+      height: 100,
+      marginTop: 150,
+	},
+	buttonText: {
+		width: 157,
+		
+		flex: 1,
+		color: "#fff",
+		fontFamily: 'Avenir',
+		textAlign: 'center',
+		marginTop: 35,
+		fontSize: 18,
+	}, 
 });
 class Summary extends React.Component{
 	
@@ -84,36 +105,56 @@ class Summary extends React.Component{
 			//}
 		});
 	}
-	getDailyTip(){
-		this.props.navigator.push({
-			component: Settings,
-			title: 'Get Daily Tip',
-			//passProps: { 
-				//userInfo: this.props.userInfo
-			//}
-		});
-	}
+		
+openPage(url){
+    this.props.navigator.push({
+      component: WebView,
+      title: '',
+      passProps: {url}
+    });
+    }
+    		    makeBackground(btn){
+    			var obj = {
+      				flexDirection: 'row',
+     				alignSelf: 'stretch',
+     				justifyContent: 'center',
+      				height: 100,
+      				marginTop: 10,
+  
+    			}
+    		if(btn === 0){
+      			obj.backgroundColor = '#FFFFFF';
+    		} else if (btn === 1){
+      			obj.backgroundColor = '#F88C1C';
+    		} else  if (btn ===2){
+      			obj.backgroundColor = '#F05A1C';
+    		} else {
+    			obj.backgroundColor = '#D0021B';
+    		}
+    		return obj;
+ 			}
+		
 	render(){
 		return(
 		  <View style = {styles.mainContainer}> 
-		    <Image style={styles.image} source={require("../images/bindings.png")}>
+
 		    <Text style = {styles.welcome}> Weekly Report John Doe </Text>
 		    
 		    
 		    <Text style = {styles.welcome}> Looks like youve had a rough week  </Text>
+
 		    <TouchableHighlight
-		    	style = {styles.submit}
+		    	style = {this.makeBackground(1)}
 				onPress = {this.reachOut.bind(this)}
 				underlayColor = '#f1eeee'>
-				<Text style={styles.button}>Reach Out To Friends</Text>
+				<Text style= {styles.buttonText}>Reach Out To Friends</Text>
 			</TouchableHighlight>			
 			<TouchableHighlight
-				style = {styles.submit}
-				onPress = {this.getDailyTip.bind(this)}
+				style = {this.makeBackground(2)}
+				onPress = {this.openPage.bind(this, 'https://stanfordbridge.wordpress.com/resources/')}
 				underlayColor = '#f1eeee'>
-				<Text style={styles.button}> Daily Tip</Text>
+				<Text style= {styles.buttonText}> Additional Resources</Text>
 			</TouchableHighlight>
-		</Image>
 		  </View>
 		)
 	}
