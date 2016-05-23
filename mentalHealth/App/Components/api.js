@@ -62,7 +62,7 @@ var _getAuthToken = function(){
     return AsyncStorage.getItem("authToken");
 };
 
-var _setUpUser = function(firstname, email, phonenumber) {
+var _setUpUser = function(firstname, email, phoneNumber) {
         if (_auth == null) {
             console.log("Isn't logged in");
             return false;
@@ -118,7 +118,7 @@ var _storeAuthToken = function(authToken){
 };
 
 
-var _login = function(username, password, callback, firstname, email) {
+var _login = function(username, password, callback, firstname, email, phoneNumber) {
         return ref.authWithPassword({
             email    : username,
             password : password
@@ -144,7 +144,7 @@ var _login = function(username, password, callback, firstname, email) {
                 _storeAuthToken(_auth.uid).then(() => {
                     if (typeof callback === "function") {
                         console.log("returning setupuser function");
-                        return callback(firstname, email);
+                        return callback(firstname, email, phoneNumber);
                     }
                 })
             }

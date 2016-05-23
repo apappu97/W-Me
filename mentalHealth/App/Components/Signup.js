@@ -121,7 +121,7 @@ class Signup extends React.Component{
 	}
 	handleSetNumber(event){
 		this.setState({
-			number: event.nativeEvent.number
+			number: event.nativeEvent.text
 		})
 	}
 	handleSetUsername(event){
@@ -147,7 +147,7 @@ class Signup extends React.Component{
 		this.setState({
 			isLoading: true
 		});
-		api.createUser(this.state.username, this.state.password, this.state.fullname, this.state.email).then(() => {
+		api.createUser(this.state.username, this.state.password, this.state.fullname, this.state.email, this.state.number).then(() => {
 			// handle login logic
 			this.props.navigator.push({
 				title: 'Profile',// username
@@ -155,7 +155,8 @@ class Signup extends React.Component{
 				passProps: {
 					userInfo: this.props,
 					username: this.state.username,
-					firstname: this.state.fullname
+					firstname: this.state.fullname,
+					phoneNumber: this.state.number
 				}// whatever response is
 			});
 					// reset
