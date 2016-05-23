@@ -1,5 +1,7 @@
 var React = require('react-native');
 var Settings= require('./Settings');
+var api = require('./api');
+
 var {
   View,
   Text,
@@ -12,64 +14,63 @@ var {
 var styles = StyleSheet.create({
 	mainContainer: {
 	    flex: 1,
-	    padding: 30,
+	    padding: 120,
+	    marginTop:20,
 
 	    flexDirection: 'column',
 	    justifyContent: 'center',
 	    backgroundColor: "#FFFFFF"
   	},
-  	container: {
+  	container1: {
   		flex: 1,
   		alignSelf: 'center',
   		flexDirection: "row",
   		justifyContent: "space-between",
   		paddingRight: 25,
   		paddingLeft: 25,
-  		paddingBottom: 25
+  
+  	}, 
+  	container2: {
+  		flex: 1,
+  		alignSelf: 'center',
+  		flexDirection: "row",
+  		justifyContent: "space-between",
+  		paddingRight: 25,
+  		paddingLeft: 25,
+  		paddingBottom: 15
   	}, 
 
-	welcome: {
-		/* Text style for "Welcome to..." */
-		height: 14,
-		color: "#043f83",
-		fontFamily: 'Avenir',
-		marginTop: 40,
-		marginBottom: 40,
-		alignSelf: 'center',
-		textAlign: 'center',
-		fontSize: 12,
-		lineHeight: 14,
-		backgroundColor: 'transparent'
-	}, 
 	button: {
 		width: 157,
-		height: 14,
+
 		color: "#fff",
 		fontFamily: 'Avenir',
 		alignSelf: 'center',
 		textAlign: 'center',
-		fontSize: 12,
-		lineHeight: 14,
-		marginTop: 8
+		justifyContent: 'center',
+		fontSize: 16,
+		marginTop: 12
+
 	}, 
 	submit: {
 		/* Style for button */
-		width: 207,
-		height: 33,
-		backgroundColor: "#5ca6f2",
-		borderRadius: 16,
+		width: 300,
+		height: 50,
+		backgroundColor: "#E63C1C",
+		borderRadius: 7,
 		alignSelf: 'center',
 		
 	},
   	usernameBox: {
 		/* Style for "email" & "password"*/
-		width: 207,
+		width: 300,
 		
 		alignSelf: 'center',
-		backgroundColor: "#f7f4f4",
+		backgroundColor: "#FFFFFF",
 		marginTop: 5,
 		borderWidth: 1,
 		borderColor: "#979797",
+		borderRadius: 7,
 		height: 50,
 		
 		
@@ -85,10 +86,7 @@ class Friends extends React.Component{
 			friend2Number: '',
 			friend3Name: '',
 			friend3Number: '',
-			friend4Name: '',
-			friend4Number: '',
-			friend5Name: '',
-			friend5Number: ''
+
 		};
 	}
 	handleFirstName(event){
@@ -121,40 +119,33 @@ class Friends extends React.Component{
 			friend3Number: event.nativeEvent.text
 		})
 	}
-	handleFourthName(event){
-		this.setState({
-			friend4Name: event.nativeEvent.text
-		})
-	}
-	handleFourthNumber(event){
-		this.setState({
-			friend4Number: event.nativeEvent.text
-		})
-	}
+
 	
 	addFriends(){
-		var Friends= require('./Friends');
-		this.props.navigator.push({
-			component: Friends,
-			title: 'Friends',
-			passProps: {
-				userInfo: this.props
-			}
+		var Profile = require('./Profile');
+		console.log("number inside addFriends function");
+		console.log(this.state.friend1Number);
+		api.addFriends(this.state.friend1Number).then(() => {
+			this.props.navigator.push({
+				component: Profile,
+				title: 'Profile',
+				passProps: {
+					userInfo: this.props
+				}
+			});
 		});
 }
 	render(){
 		return(
 			 <View style = {styles.mainContainer}>
-					<Text style={styles.welcome}> Add Family and Friends </Text>
-					
-					<View style={styles.container}>
+					<View style={styles.container1}>
 					<TextInput
 						style={styles.usernameBox}
 						value={this.state.friend1Name}
 						placeholder = " Name"
 						onChange={this.handleFirstName.bind(this)} />
 					</View>
-					<View style={styles.container}>
+					<View style={styles.container2}>
 					<TextInput
 						style={styles.usernameBox}
 						keyboardType = 'numeric'
@@ -163,14 +154,14 @@ class Friends extends React.Component{
 						onChange={this.handleFirstNumber.bind(this)} />
 					</View>
 					
-					<View style={styles.container}>
+					<View style={styles.container1}>
 					<TextInput
 						style={styles.usernameBox}
 						value={this.state.friend2Name}
 						placeholder = " Name"
 						onChange={this.handleSecondName.bind(this)} />
 					</View>
-					<View style={styles.container}>
+					<View style={styles.container2}>
 					<TextInput
 						style={styles.usernameBox}
 						keyboardType = 'numeric'
@@ -179,14 +170,14 @@ class Friends extends React.Component{
 						onChange={this.handleSecondNumber.bind(this)} />
 					</View>
 					
-					<View style={styles.container}>
+					<View style={styles.container1}>
 					<TextInput
 						style={styles.usernameBox}
 						value={this.state.friend3Name}
 						placeholder = " Name"
 						onChange={this.handleThirdName.bind(this)} />
 					</View>
-					<View style={styles.container}>
+					<View style={styles.container2}>
 					<TextInput
 						style={styles.usernameBox}
 						keyboardType = 'numeric'
@@ -195,28 +186,12 @@ class Friends extends React.Component{
 						onChange={this.handleThirdNumber.bind(this)} />
 					</View>
 					
-					<View style={styles.container}>
-					<TextInput
-						style={styles.usernameBox}
-						value={this.state.friend4Name}
-						placeholder = " Name"
-						onChange={this.handleFourthName.bind(this)} />
-					</View>
-					<View style={styles.container}>
-					<TextInput
-						style={styles.usernameBox}
-						keyboardType = 'numeric'
-						value={this.state.friend4Number}
-						placeholder = " Phone Number"
-						onChange={this.handleFourthNumber.bind(this)} />
-					</View>
-					
 					
 					<TouchableHighlight
 						style = {styles.submit}
 						onPress = {this.addFriends.bind(this)}
 						underlayColor = '#f1eeee'>
-						<Text style = {styles.button}> Add Friends!</Text>
+						<Text style = {styles.button}> Add Friends</Text>
 					</TouchableHighlight>
 			</View>
 		)

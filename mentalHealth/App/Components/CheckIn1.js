@@ -52,14 +52,14 @@ var styles = StyleSheet.create({
   	},
 	welcome: {
 		/* Text style for "Welcome to..." */
-		height: 14,
+		
 		color: "#043f83",
 		fontFamily: 'Avenir',
 		marginTop: 40,
 		alignSelf: 'center',
 		textAlign: 'center',
-		fontSize: 12,
-		lineHeight: 14,
+		fontSize: 20,
+		
 		backgroundColor: 'transparent'
 	} 
 });
@@ -95,34 +95,34 @@ class CheckIn1 extends React.Component{
 				    <TouchableHighlight
 					  onPress = {this.submitScore.bind(this, 1)}
 					  underlayColor = '#f1eeee'>
-					    <Image source = {require("../images/smile.png")} />
+					    <Image source = {require("../images/Smile1.png")} />
 					</TouchableHighlight>
 					<TouchableHighlight
 					  onPress = {this.submitScore.bind(this, 2)}
 					  underlayColor = '#f1eeee'>
-					    <Image source = {require("../images/face.png")} />
+					    <Image source = {require("../images/Smile2.png")} />
 					</TouchableHighlight>
 					<TouchableHighlight
 					  onPress = {this.submitScore.bind(this, 3)}
 					  underlayColor = '#f1eeee'>
-					    <Image source = {require("../images/face.png")} />
+					    <Image source = {require("../images/Smile3.png")} />
 					</TouchableHighlight>
 				</View>
 				<View style = {styles.container2}>
 					<TouchableHighlight
 					  onPress = {this.submitScore.bind(this, 4)}
 					  underlayColor = '#f1eeee'>
-					    <Image source = {require("../images/face.png")} />
+					    <Image source = {require("../images/Smile4.png")} />
 					</TouchableHighlight>
 					<TouchableHighlight
 					  onPress = {this.submitScore.bind(this, 5)}
 					  underlayColor = '#f1eeee'>
-					    <Image source = {require("../images/face.png")} />
+					    <Image source = {require("../images/Smile5.png")} />
 					</TouchableHighlight>
 					<TouchableHighlight
 					  onPress = {this.submitScore.bind(this, 6)}
 					  underlayColor = '#f1eeee'>
-					    <Image source = {require("../images/Happiest.png")} />
+					    <Image source = {require("../images/Smile6.png")} />
 					</TouchableHighlight>
 				</View>
 				<View style = {styles.container3}>

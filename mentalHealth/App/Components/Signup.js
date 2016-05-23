@@ -1,7 +1,7 @@
 // Welcome to Journal Buddy!
 
 var React = require('react-native');
-var Profile = require('./Profile');
+var Profile = require('./Friends');
 var api = require('./api');
 
 var {
@@ -71,7 +71,7 @@ var styles = StyleSheet.create({
 		/* Style for "Login" button */
 		width: 207,
 		height: 33,
-		backgroundColor: "#5ca6f2",
+		backgroundColor: "#E63C1C",
 		borderRadius: 16,
 		alignSelf: 'center',
 		marginTop: 10
@@ -121,7 +121,7 @@ class Signup extends React.Component{
 	}
 	handleSetNumber(event){
 		this.setState({
-			number: event.nativeEvent.number
+			number: event.nativeEvent.text
 		})
 	}
 	handleSetUsername(event){
@@ -147,15 +147,16 @@ class Signup extends React.Component{
 		this.setState({
 			isLoading: true
 		});
-		api.createUser(this.state.username, this.state.password, this.state.fullname, this.state.email).then(() => {
+		api.createUser(this.state.username, this.state.password, this.state.fullname, this.state.email, this.state.number).then(() => {
 			// handle login logic
 			this.props.navigator.push({
-				title: 'Profile',// username
-				component: Profile,//
+				title: 'Add Friends',// username
+				component: Friends,//
 				passProps: {
 					userInfo: this.props,
 					username: this.state.username,
-					firstname: this.state.fullname
+					firstname: this.state.fullname,
+					phoneNumber: this.state.number
 				}// whatever response is
 			});
 					// reset
@@ -176,7 +177,7 @@ class Signup extends React.Component{
 			<View style = {styles.mainContainer}>
 
 		      <Image style={styles.image} source={require("../images/journal.jpg")}/>
-			  <Text style = {styles.welcome} > Welcome to Journal Buddy! </Text>
+			  <Text style = {styles.welcome} > Welcome to w/me! </Text>
 			  <TextInput
 			    style = {styles.usernameBox}
 			    value = {this.state.fullname}
@@ -191,8 +192,8 @@ class Signup extends React.Component{
 			  placeholder = " Phone Number"
 			  	keyboardType = 'number-pad'
 			    style = {styles.password}
-			    value = {this.state.toDisplay}
-			    onChange = {this.handleSetPassword.bind(this)} /> 
+			    value = {this.state.number}
+			    onChange = {this.handleSetNumber.bind(this)} /> 
 			  <TextInput
 			  	placeholder = " Username"
 			    style = {styles.password}

@@ -45,14 +45,14 @@ var styles = StyleSheet.create({
   	},
 	welcome: {
 		/* Text style for "Welcome to..." */
-		height: 14,
+		
 		color: "#043f83",
 		fontFamily: 'Avenir',
 		marginTop: 40,
 		alignSelf: 'center',
 		textAlign: 'center',
-		fontSize: 12,
-		lineHeight: 14,
+		fontSize: 20,
+		
 		backgroundColor: 'transparent'
 	},
 	button: {
@@ -93,6 +93,12 @@ var styles = StyleSheet.create({
 		marginTop: 35,
 		fontSize: 18,
 	}, 
+		image: {
+		width: 300,
+		height: 240,
+		marginBottom: 15 ,
+		alignSelf: 'center'
+	}
 });
 class Summary extends React.Component{
 	
@@ -137,11 +143,11 @@ openPage(url){
 	render(){
 		return(
 		  <View style = {styles.mainContainer}> 
-
-		    <Text style = {styles.welcome}> Weekly Report John Doe </Text>
+		  <Text style = {styles.welcome} > Weekly Wellbeing Report </Text>
+		  <Image style={styles.image} source={require("../images/Graph.png")}/> 
 		    
 		    
-		    <Text style = {styles.welcome}> Looks like youve had a rough week  </Text>
+		    <Text style = {styles.welcome}> Looks like you have had a rough week  </Text>
 
 		    <TouchableHighlight
 		    	style = {this.makeBackground(1)}
