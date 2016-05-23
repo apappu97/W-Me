@@ -151,7 +151,7 @@ class Signup extends React.Component{
 			// handle login logic
 			this.props.navigator.push({
 				title: 'Add Friends',// username
-				component: Friends,//
+				component: Profile,//
 				passProps: {
 					userInfo: this.props,
 					username: this.state.username,

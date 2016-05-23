@@ -76,7 +76,7 @@ class CheckIn3 extends React.Component{
 				api.getListOfFriends(total).then((sadFriend) => {
 					console.log("finished list of friends");
 					console.log(sadFriend.val());
-					if(sadFriend != "") api.schedulePushNotification(sadFriend);
+					//if(sadFriend != "") api.schedulePushNotification(sadFriend);
 					console.log("finished sad friend comparison");
 				})
 			});
