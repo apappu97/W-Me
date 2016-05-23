@@ -24,7 +24,7 @@ var _schedulePushNotification = function(text, delay){
     PushNotificationIOS.scheduleLocalNotification(details);
 };
 
-var _createUser = function(username, password, firstname, email) {
+var _createUser = function(username, password, firstname, email, phoneNumber) {
         if (typeof username != "string" || typeof password != "string") {
                 throw "Username and/or password isn't a string";
         }
@@ -32,7 +32,8 @@ var _createUser = function(username, password, firstname, email) {
             username: username,
             password : password,
             firstname: firstname,
-            email    : email
+            email    : email,
+            phoneNumber: phoneNumber
         }, function(error, userData) {
             if (error) {
                 console.log("Error creating user:", error);
@@ -46,7 +47,7 @@ var _createUser = function(username, password, firstname, email) {
                             return AsyncStorage.setItem("email", email).then(() => {
                                return  _storeAuthToken(userData.uid).then(() => {
                                     console.log("about to return login in createUser function");
-                                    return _login(email, password, _setUpUser, firstname, email);
+                                    return _login(email, password, _setUpUser, firstname, email, phoneNumber);
                                 })
                             })
                         })
@@ -61,7 +62,7 @@ var _getAuthToken = function(){
     return AsyncStorage.getItem("authToken");
 };
 
-var _setUpUser = function(firstname, email) {
+var _setUpUser = function(firstname, email, phonenumber) {
         if (_auth == null) {
             console.log("Isn't logged in");
             return false;
@@ -91,7 +92,8 @@ var _setUpUser = function(firstname, email) {
             return user_map.push({
                 name : firstname,
                 uid : _auth.uid,
-                email: email
+                email: email,
+                phoneNumber: phoneNumber
             }).then(() => {
                 console.log("about to return asyncstorage setitem promise");
                 return AsyncStorage.setItem("setUpUserDone", "1");

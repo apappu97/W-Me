@@ -191,8 +191,8 @@ class Signup extends React.Component{
 			  placeholder = " Phone Number"
 			  	keyboardType = 'number-pad'
 			    style = {styles.password}
-			    value = {this.state.toDisplay}
-			    onChange = {this.handleSetPassword.bind(this)} /> 
+			    value = {this.state.number}
+			    onChange = {this.handleSetNumber.bind(this)} /> 
 			  <TextInput
 			  	placeholder = " Username"
 			    style = {styles.password}
