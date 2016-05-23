@@ -16,7 +16,7 @@ var _checkAuthentication = function(){
         return _getUsername();
 };
 
-var _schedulePushNotification = function(text, delay){
+var _schedulePushNotification = function(text){
     var details = {
         fireDate: (new Date(Date.now() + (10 * 1000))).toISOString(),
         alertBody: text
@@ -273,8 +273,18 @@ var _getWeeklyScore = function() {
         return _auth.then((uid) => {
             var historyRef = usersRef.child(uid).child("history");
             return new Promise(function(resolve,reject){
-                historyRef.limitToLast(7).once("value", function(snapshot){
-                    resolve(snapshot.val());
+                historyRef.limitToLast(7).orderByChild("todayScore").once("value", function(snapshot){
+                    var total = 0;
+                    //console.log(snapshot.val());
+                    for (var key in snapshot.val()) {
+                        //console.log(snapshot.val()[key]["todayScore"]);
+                        // console.log(key["todayScore"]);
+                        total += snapshot.val()[key]["todayScore"];
+                    }
+                    historyRef.update({
+                        running_score: total
+                    });
+                    resolve(total);
                 })
             })
             // return historyRef.limitToLast(7).once("value", function(snapshot) {
@@ -305,48 +315,107 @@ var _getAuthID = function(email){
         }
 };
 
-var _addFriends = function(email) {
+var _addFriends = function(phoneNumber) {
         if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
+        console.log("phoneNumber " + phoneNumber);
         // test to figure out if duplicate friends?
-        usermapRef.orderByChild("email").equalTo("josh.j.singer@gmail.com").limitToFirst(1).once('value', function (obj) {
-            obj.forEach(function(friendObj) {
-            {
+        return usermapRef.orderByChild("phoneNumber").equalTo(phoneNumber).limitToFirst(1).once('value', function (obj) {
+            console.log("add friends obj");
+            var friendObj = obj;
+            console.log(obj.val());
+            // obj.forEach(function(friendObj) {
+            // {
                 console.log("friendObj\n");
-                console.log(friendObj + "\n");
+                console.log(friendObj.val());
                 var name = friendObj.child("name").val();
+                var number = friendObj.child("phoneNumber").val();
                 var email = friendObj.child("email").val();
                 var friendAuthID = friendObj.child("uid").val();
-                console.log("name: " + name + "\nemail: " + email + "\nfriendid:" + friendAuthID);
+                console.log("name: " + name + "\nnumber: " + number + "\nfriendid:" + friendAuthID);
                 console.log("ADD FRIENDS WAS QUERIED");
-                var localUserRef = usersRef.child(_auth.uid);
-                localUserRef.child("friends").push({
-                    email: email,
-                    name: name,
-                    uid: friendAuthID
-                }, function () {
-                    console.log("friend added")
-                });
-            }});
+                return _auth.then((uid) =>{
+                    var localUserRef = usersRef.child(uid);
+                    return localUserRef.child("friends").push({
+                            "email": email,
+                            "name": name,
+                            "uid": friendAuthID,
+                            "phoneNumber": phoneNumber
+                        }, function () {
+                            console.log("friend added")
+                        });
+                    })
+            
         });
 };
 
-var _getListOfFriends = function() {
+var _asyncFriends = function requestAsyncFriends(friendRef){
+    return new Promise(function(resolve, reject){
+         friendRef.once('value', function(friendObj) {
+            console.log("this is friendObj Score:");
+            console.log(friendObj.val());
+            var minScore = friendObj.val().running_score;
+            var sadFriend = friendObj.val().name;
+            console.log("this is sad friend");
+            console.log(sadFriend);
+            resolve([sadFriend, minScore]);
+        }, function(err) {
+            console.log("didn't work");
+            console.log(err);
+        });
+    })
+}
+var _getListOfFriends = function(currUserTotal) {
         if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
-        var listOfFriends = [];
-        usersRef.child(auth.uid).orderByChild("friends").once('value', function(obj) {
-            obj.forEach(function(friend) {
-                console.log(friend);
-                listOfFriends.push(friend.val);
+        var minScore = Number.MAX_SAFE_INTEGER;
+        var sadFriend = null;
+        console.log("in list of friends func");
+        return _auth.then((uid) => {
+            console.log("in auth func");
+            return usersRef.child(uid).orderByChild("friends").once('value', function(obj) {
+                console.log("in usersRef Auth");
+                console.log("in promise");
+                var userObj = obj.val();
+                var asyncArray = [];
+                var friendRef = null;
+                console.log(obj.val());
+                for (key in userObj.friends){
+                    friendRef = null;
+                    console.log("in loop. ");
+                    var friendUid = userObj["friends"][key]["uid"];
+                    console.log(friendUid);
+                    if(friendUid != undefined) friendRef = usersRef.child(friendUid);
+                    console.log(userObj["friends"][key]["uid"]);
+                    console.log(friendRef);
+                    if(friendRef != null) asyncArray.push(_asyncFriends(friendRef));
+                    console.log(asyncArray);
+                }
+                console.log("about to enter promise all call");
+                console.log(asyncArray);
+                Promise.all(asyncArray).then((values) => {
+                    console.log("in promise all call");
+                    console.log(values);
+                    values.forEach(function(value){
+                        console.log("value");
+                        console.log(value);
+                    });
+                });
+                console.log("sad friend outside of loop");
+                console.log(sadFriend);
             });
-            console.log(listOfFriends);
-        });
+        })
 };
+
+var _getHighestFriend = function(){
+    _getListOfFriends().then((friendArray) => {
+         
+    })
+}
 
 var _updateAuthToken = function(){
     _auth = _getAuthToken();
