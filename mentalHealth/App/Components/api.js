@@ -1,26 +1,38 @@
 var React = require('react-native');
 var Firebase = require("firebase");
+// var Promise = require('promise');
 
 var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
-
 var usermapRef = ref.child("user_map");
+
 var usersRef = ref.child("users");
 
 var {
-    AsyncStorage
+    AsyncStorage,
+    PushNotificationIOS
 } = React;
 
 var _checkAuthentication = function(){
         return _getUsername();
 };
 
-var _createUser = function(username, password, firstname) {
+var _schedulePushNotification = function(text, delay){
+    var details = {
+        fireDate: (new Date(Date.now() + (10 * 1000))).toISOString(),
+        alertBody: text
+    }
+    PushNotificationIOS.scheduleLocalNotification(details);
+};
+
+var _createUser = function(username, password, firstname, email) {
         if (typeof username != "string" || typeof password != "string") {
                 throw "Username and/or password isn't a string";
         }
-        ref.createUser({
-            email    : username,
-            password : password
+        return ref.createUser({
+            username: username,
+            password : password,
+            firstname: firstname,
+            email    : email
         }, function(error, userData) {
             if (error) {
                 console.log("Error creating user:", error);
@@ -28,10 +40,16 @@ var _createUser = function(username, password, firstname) {
             } else {
                 console.log("Successfully created user account with uid:", userData.uid);
                 _auth = userData;
-                AsyncStorage.setItem("username", username).then((value) => {
-                    AsyncStorage.setItem("password", password).then(() => {
-                        // credentials updated, login now
-                        _login(username, password, setUpUser(firstname, username));
+                return AsyncStorage.setItem("username", username).then((value) => {
+                    return AsyncStorage.setItem("password", password).then(() => {
+                        return AsyncStorage.setItem("firstname", firstname).then(() => {
+                            return AsyncStorage.setItem("email", email).then(() => {
+                               return  _storeAuthToken(userData.uid).then(() => {
+                                    console.log("about to return login in createUser function");
+                                    return _login(email, password, _setUpUser, firstname, email);
+                                })
+                            })
+                        })
                     })
                 })
 
@@ -39,24 +57,46 @@ var _createUser = function(username, password, firstname) {
         });
 };
 
+var _getAuthToken = function(){
+    return AsyncStorage.getItem("authToken");
+};
+
 var _setUpUser = function(firstname, email) {
-        if (auth == null) {
+        if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
-        var localUserRef = usersRef.child(auth.uid);
-        localUserRef.set({
+        // var localUserRef = usersRef.child(_auth.uid);
+        // localUserRef.set({
+        //     "score": 0,
+        //     "days": 0,
+        // }, function() {
+        //     console.log("set up a user");
+        // });
+        // var user_map = ref.child("user_map");
+        // user_map.push({
+        //     name : firstname,
+        //     uid : _auth.uid,
+        //     email: email
+        // });
+        var localUserRef = usersRef.child(_auth.uid);
+        return localUserRef.set({
             "score": 0,
             "days": 0,
+            "running_score": 0
         }, function() {
             console.log("set up a user");
-        });
-        var user_map = ref.child("user_map");
-        user_map.push({
-            name : firstname,
-            uid : auth.uid,
-            email: email
-        });
+        }).then(() => {
+            var user_map = ref.child("user_map");
+            return user_map.push({
+                name : firstname,
+                uid : _auth.uid,
+                email: email
+            }).then(() => {
+                console.log("about to return asyncstorage setitem promise");
+                return AsyncStorage.setItem("setUpUserDone", "1");
+            })
+        })
 };
 
 var _getUsername = function(){
@@ -67,16 +107,17 @@ var _getPassword = function(){
         return AsyncStorage.getItem("password");
 };
 
+var _getFirstName = function(){
+    return AsyncStorage.getItem("firstname");
+}
+
 var _storeAuthToken = function(authToken){
-        return AsyncStorage.setItem("authToken", authToken);
+    return AsyncStorage.setItem("authToken", authToken);
 };
 
-var _getAuthToken = function(){
-        return AsyncStorage.getItem("authToken");
-};
 
-var _login = function(username, password, callback) {
-        ref.authWithPassword({
+var _login = function(username, password, callback, firstname, email) {
+        return ref.authWithPassword({
             email    : username,
             password : password
         }, function(error, authData) {
@@ -97,10 +138,11 @@ var _login = function(username, password, callback) {
                 }
             } else {
                 console.log("Authenticated successfully with payload:", authData);
-                auth = authData;
-                storeAuthToken(auth).then(() => {
+                _auth = authData;
+                _storeAuthToken(_auth.uid).then(() => {
                     if (typeof callback === "function") {
-                        callback();
+                        console.log("returning setupuser function");
+                        return callback(firstname, email);
                     }
                 })
             }
@@ -109,7 +151,7 @@ var _login = function(username, password, callback) {
 
 var _isThereData = function() {
         usersRef.on("value", function(snapshot) {
-            console.log(snapshot.val());
+            console.log(snapshot.val);
             return true;
         }, function (errorObject) {
             console.log("The read failed: " + errorObject.code);
@@ -119,45 +161,99 @@ var _isThereData = function() {
 
 
 var _getUserInfo = function(callback) {
-        if (auth == null) {
+        if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
-        localUserRef = usersRef.child(auth.uid);
-        var userInfo = null;
-        localUserRef.once("value", function(data) {
-            userInfo = data.val();
-        }, function() {
-            if (typeof callback === 'function')
-            callback(userInfo);
-        });
+        console.log("getuserinfo first");
+        return _auth.then((uid) => {
+            localUserRef = usersRef.child(uid);
+            var userInfo = null;
+            console.log("getuserinfo second");
+            localUserRef.once("value", function(data) {
+                userInfo = data.val();
+                console.log(userInfo);
+                return callback(userInfo);
+            }, function(userInfo) {
+                    console.log("getuserinfo third");
+                    
+                }  
+            );
+        })
+        // localUserRef = usersRef.child(_auth.uid);
+        // var userInfo = null;
+        // localUserRef.once("value", function(data) {
+        //     userInfo = data.val();
+        // }, function() {
+        //     if (typeof callback === 'function')
+        //     callback(userInfo);
+        // });
 
 };
 
 var _setScore = function(todayScore) {
-        if (auth == null) {
+        if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
-        var userInfo = getUserInfo();
+        return _getUserInfo(function(userInfo){
+            if (userInfo) {
+                console.log("we're hitting something");
+                return _auth.then((uid) => {
+                    console.log("this is uid");
+                    console.log(uid);
+                    var localUserRef = usersRef.child(uid);
+                    var historyRef = usersRef.child(uid).child("history");
+                    var score = userInfo.score;
+                    var days = userInfo.days + 1;
+                    score += todayScore;
+                    historyRef.push({"todayScore":todayScore});
+                    return localUserRef.update({
+                        "score": score,
+                        "days": days,
+                        "running_score": score
+                    }).catch((error) => {
+                        console.log(error);
+                    });
+                })
+            }
+            else {
+                console.log("shit ain't working");
+            }
+        });
+        //var userInfo = 1;
         // could optimize out vars, will do later, much more readable this way
-        if (userInfo) {
-            var localUserRef = usersRef.child(auth.uid);
-            var score = userInfo.score;
-            var days = userInfo.days + 1;
-            score += todayScore;
-            localUserRef.push({running_score:todayScore});
-            localUserRef.update({
-                "score": score,
-                "days": days,
-                "running_score": runningScore
-            });
-        }
+        // if (userInfo) {
+        //     return _auth.then((uid) => {
+        //         console.log("this is uid");
+        //         console.log(uid);
+        //         var localUserRef = usersRef.child(uid);
+        //         var score = userInfo.score;
+        //         var days = userInfo.days + 1;
+        //         score += todayScore;
+        //         localUserRef.push({running_score:todayScore});
+        //         return localUserRef.update({
+        //             "score": score,
+        //             "days": days,
+        //             "running_score": score
+        //         });
+        //     })
 
+            // var localUserRef = usersRef.child(_auth.uid);
+            // var score = userInfo.score;
+            // var days = userInfo.days + 1;
+            // score += todayScore;
+            // localUserRef.push({running_score:todayScore});
+            // return localUserRef.update({
+            //     "score": score,
+            //     "days": days,
+            //     "running_score": runningScore
+            // });
+        //}
 };
 
 var _getAverageScore = function() {
-        if (auth == null) {
+        if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
@@ -168,18 +264,28 @@ var _getAverageScore = function() {
 };
 
 var _getWeeklyScore = function() {
-        if (auth == null) {
+        if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
-        var userInfo = getUserInfo();
-        if (userInfo) {
-            return userInfo.running_score.slice(Math.max(arr.length - 7, 0), 7);
-        }
+        return _auth.then((uid) => {
+            var historyRef = usersRef.child(uid).child("history");
+            return new Promise(function(resolve,reject){
+                historyRef.limitToLast(7).once("value", function(snapshot){
+                    resolve(snapshot.val());
+                })
+            })
+            // return historyRef.limitToLast(7).once("value", function(snapshot) {
+            //   console.log(snapshot.val());
+            //     return new Promise(function(resolve, reject){
+            //         resolve(snapshot.val());
+            //     });
+            // });
+        });
 };
 
 var _getMonthlyScore = function() {
-        if (auth == null) {
+        if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
@@ -191,15 +297,14 @@ var _getMonthlyScore = function() {
 };
 
 var _getAuthID = function(email){
-        if (auth == null) {
+        if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
-        // var localUserRef = u
 };
 
 var _addFriends = function(email) {
-        if (auth == null) {
+        if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
@@ -214,7 +319,7 @@ var _addFriends = function(email) {
                 var friendAuthID = friendObj.child("uid").val();
                 console.log("name: " + name + "\nemail: " + email + "\nfriendid:" + friendAuthID);
                 console.log("ADD FRIENDS WAS QUERIED");
-                var localUserRef = usersRef.child(auth.uid);
+                var localUserRef = usersRef.child(_auth.uid);
                 localUserRef.child("friends").push({
                     email: email,
                     name: name,
@@ -227,7 +332,7 @@ var _addFriends = function(email) {
 };
 
 var _getListOfFriends = function() {
-        if (auth == null) {
+        if (_auth == null) {
             console.log("Isn't logged in");
             return false;
         }
@@ -235,11 +340,16 @@ var _getListOfFriends = function() {
         usersRef.child(auth.uid).orderByChild("friends").once('value', function(obj) {
             obj.forEach(function(friend) {
                 console.log(friend);
-                listOfFriends.push(friend.val());
+                listOfFriends.push(friend.val);
             });
             console.log(listOfFriends);
         });
 };
+
+var _updateAuthToken = function(){
+    _auth = _getAuthToken();
+
+}
 
 var api;
 
@@ -279,6 +389,7 @@ var _auth = _getAuthToken();
         setUpUser: _setUpUser,
         getUsername: _getUsername,
         getPassword: _getPassword,
+        getFirstName: _getFirstName,
         storeAuthToken: _storeAuthToken,
         getAuthToken: _getAuthToken,
         login: _login,
@@ -291,7 +402,9 @@ var _auth = _getAuthToken();
         getAuthID: _getAuthID,
         addFriends: _addFriends,
         getListOfFriends: _getListOfFriends,
-        auth: _auth
+        auth: _auth,
+        schedulePushNotification: _schedulePushNotification,
+        updateAuthToken: _updateAuthToken
 
     /*
     createUser is a method that takes in a username and a password and returns

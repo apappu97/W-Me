@@ -2,6 +2,7 @@ var React = require('react-native');
 var CheckIn1 = require('./CheckIn1');
 var Settings = require('./Settings');
 var Summary = require('./Summary');
+var api = require('./api');
 
 var {
   Text,
@@ -9,7 +10,8 @@ var {
   NavigatorIOS,
   Image,
   StyleSheet,
-  TouchableHighlight
+  TouchableHighlight,
+  PushNotificationIOS
 } = React;
 
 var styles = StyleSheet.create({
@@ -46,7 +48,7 @@ class Profile extends React.Component{
     }
     return obj;
   }
-  goToProfile(){
+  goToCheckIn(){
     var CheckIn1 = require('./CheckIn1');
     this.props.navigator.push({
       component: CheckIn1,
@@ -68,13 +70,15 @@ class Profile extends React.Component{
           passProps: {userInfo: this.props}
         });
   }
+
   render(){
+    console.log(this.props);
     return (
       <View style={styles.container}>
         <Image source= {require("../images/smiley.jpg")} style={styles.image}/>
         <TouchableHighlight
             style={this.makeBackground(0)}
-            onPress={this.goToProfile.bind(this)}
+            onPress={this.goToCheckIn.bind(this)}
             underlayColor="#88D4F5">
               <Text style={styles.buttonText}>Check In</Text>
         </TouchableHighlight>

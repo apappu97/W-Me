@@ -9,6 +9,8 @@ var Main = require('./App/Components/Main');
 var React = require('react-native');
 var Signup = require('./App/Components/Signup');
 var api = require('./App/Components/api');
+var Profile = require('./App/Components/Profile');
+const firebase = require("firebase");
 
 var {
   AsyncStorage,
@@ -33,7 +35,10 @@ class mentalHealth extends Component {
     super(props);
     this.state = {
       loaded: false,
-      authenticated: undefined
+      loadedCredentials: false,
+      authenticated: undefined,
+      username: '',
+      firstname: ''
     }
   }
 
@@ -42,12 +47,24 @@ class mentalHealth extends Component {
       this.setState({
         loaded: true,
         authenticated: value
-      })
-    })
+      });
+      api.getUsername().then((username) => {
+          this.setState({
+            username: username
+          })
+          api.getFirstName().then((fullname) => {
+            this.setState({
+              fullname: fullname,
+              loadedCredentials: true
+            })
+          })
+      });
+    });
   }
 
   render() {
-    if(this.state.loaded){
+    //AsyncStorage.clear();
+    if(this.state.loaded && this.state.loadedCredentials){
         if(!this.state.authenticated){ // no user
         return(
           <NavigatorIOS
@@ -63,9 +80,13 @@ class mentalHealth extends Component {
           <NavigatorIOS
           style = {styles.container}
           initialRoute={{
-            title: 'Journal Buddy',
-            component: Main,
-            passProps: {userInfo: this.props}
+            title: 'Profile',
+            component: Profile,
+            passProps: {
+              userInfo: this.props,
+              username: this.state.username,
+              firstname: this.state.fullname
+            }
           }} />
         )
       }

@@ -1,6 +1,6 @@
 var React = require('react-native');
 var Settings = require('./Settings');
-var Profile = require('./Profile');
+var api = require('./api');
 
 var {
   View,
@@ -10,6 +10,7 @@ var {
   TextInput,
   TouchableHighlight,
   ActivityIndicatorIOS,
+  PushNotificationIOS
 } = React;
 
 var styles = StyleSheet.create({
@@ -56,26 +57,32 @@ var styles = StyleSheet.create({
 
 class CheckIn3 extends React.Component{
 	submitScore(score){
-
-		// this.props.navigator.push({
-		// 	component: Settings,
-		// 	title: 'Settings',
-		// 	passProps: { 
-		// 		userInfo: this.props.userInfo
-		// 	}
-		// });
-
+		var newScore = this.props.score + score;
+		console.log("submitting score");
 		var Profile = require('./Profile');
-		this.props.navigator.push({
-			component: Profile,
-			title: 'Profile',
-			passProps: { 
-				userInfo: this.props.userInfo
-			}
+		api.setScore(newScore).then(() => {
+			api.getWeeklyScore().then((history) => {
+				console.log("in checkin3");
+				console.log(history);
+				api.schedulePushNotification("Hello");
+				this.props.navigator.push({
+				component: Profile,
+				title: 'Profile',
+				passProps: 
+					{ 
+						userInfo: this.props.userInfo,
+						score: newScore,
+						history: history
+					}
+				});
+			});
 		});
 	}
 
 	render(){
+		console.log(this.props);
+		console.log("requesting permissions");
+		PushNotificationIOS.requestPermissions();
 		return(
 			<View style = {styles.mainContainer}> 
 			  <Image style={styles.image} source={require("../images/bindings.png")}>
