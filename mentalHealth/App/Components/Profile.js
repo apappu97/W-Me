@@ -72,6 +72,8 @@ class Profile extends React.Component{
   }
 
   render(){
+    console.log("requesting permissions");
+    PushNotificationIOS.requestPermissions();
     console.log(this.props);
     return (
       <View style={styles.container}>

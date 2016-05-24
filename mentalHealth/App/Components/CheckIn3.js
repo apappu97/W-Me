@@ -1,7 +1,7 @@
 var React = require('react-native');
 var Settings = require('./Settings');
 var api = require('./api');
-
+var Profile = require('./Profile');
 var {
   View,
   Text,
@@ -64,6 +64,10 @@ var styles = StyleSheet.create({
 });
 
 class CheckIn3 extends React.Component{
+	wait(){
+		counter++;
+	}
+
 	submitScore(score){
 		var newScore = this.props.score + score;
 		console.log("submitting score");
@@ -73,10 +77,27 @@ class CheckIn3 extends React.Component{
 				console.log("finished weekly score");
 				console.log("in checkin3");
 				console.log("entering list of friends");
-				api.getListOfFriends(total).then((sadFriend) => {
+				api.getListOfFriends(total, function(sadFriend){
+					console.log(sadFriend + "IS REALLY SAD");
+					if(sadFriend !== "") api.schedulePushNotification(sadFriend);
+				}).then((sadFriend) => {
+					this.props.navigator.push({
+						component: Profile,
+						title: 'Profile',
+						passProps: {
+							userInfo: this.props.userInfo
+						}
+					})
 					console.log("finished list of friends");
-					console.log(sadFriend.val());
-					if(sadFriend != "") api.schedulePushNotification(sadFriend);
+					// var counter = 0;
+					// while(counter < 5){
+					// 	setTimeout(this.wait(), 1000);
+					// 	//console.log("watig");
+					// }
+					console.log(sadFriend);
+					//console.log(typeof(sadFriend));
+					console.log(api.sadFriend);
+					//if(sadFriend != "") api.schedulePushNotification(sadFriend);
 					console.log("finished sad friend comparison");
 				})
 			});

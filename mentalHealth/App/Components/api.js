@@ -1,6 +1,5 @@
 var React = require('react-native');
 var Firebase = require("firebase");
-// var Promise = require('promise');
 
 var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
 var usermapRef = ref.child("user_map");
@@ -19,7 +18,7 @@ var _checkAuthentication = function(){
 var _schedulePushNotification = function(text){
     var details = {
         fireDate: (new Date(Date.now() + (10 * 1000))).toISOString(),
-        alertBody: text
+        alertBody: text + " isn't doing so hot. You should check in on them!"
     }
     PushNotificationIOS.scheduleLocalNotification(details);
 };
@@ -85,7 +84,8 @@ var _setUpUser = function(firstname, email, phoneNumber) {
             "score": 0,
             "days": 0,
             "running_score": 0,
-            "name": firstname
+            "name": firstname,
+            "phoneNumber": phoneNumber
         }, function() {
             console.log("set up a user");
         }).then(() => {
@@ -214,7 +214,9 @@ var _setScore = function(todayScore) {
                     return localUserRef.update({
                         "score": score,
                         "days": days,
-                        "running_score": score
+                        "running_score": score,
+                        "name": userInfo.name,
+                        "phoneNumber": userInfo.phoneNumber
                     }).catch((error) => {
                         console.log(error);
                     });
@@ -276,12 +278,13 @@ var _getWeeklyScore = function() {
             return new Promise(function(resolve,reject){
                 historyRef.limitToLast(7).orderByChild("todayScore").once("value", function(snapshot){
                     var total = 0;
-                    //console.log(snapshot.val());
                     for (var key in snapshot.val()) {
-                        //console.log(snapshot.val()[key]["todayScore"]);
-                        // console.log(key["todayScore"]);
-                        total += snapshot.val()[key]["todayScore"];
+                        console.log("in weekly score");
+                        console.log(snapshot.val()[key]["todayScore"]);
+                        if(snapshot.val()[key]["todayScore"] != undefined) total += snapshot.val()[key]["todayScore"];
                     }
+                    console.log("this is totaol");
+                    console.log(total);
                     historyRef.update({
                         running_score: total
                     });
@@ -323,7 +326,8 @@ var _addFriends = function(phoneNumber) {
         }
         console.log("phoneNumber " + phoneNumber);
         // test to figure out if duplicate friends?
-        return usermapRef.orderByChild("phoneNumber").equalTo(phoneNumber).limitToFirst(1).once('value', function (obj) {
+        //.equalTo(phoneNumber).limitToFirst(1)
+        return usersRef.orderByChild("name").once('value', function (obj) {
             console.log("add friends obj");
             var friendObj = obj;
             console.log(obj.val());
@@ -349,26 +353,98 @@ var _addFriends = function(phoneNumber) {
                         });
                     })
             
+        }, function(error) {
+            console.log(error);
         });
 };
 
-var _asyncFriends = function requestAsyncFriends(friendRef){
-    return new Promise(function(resolve, reject){
-         friendRef.once('value', function(friendObj) {
-            console.log("this is friendObj Score:");
-            console.log(friendObj.val());
-            var minScore = friendObj.val().running_score;
-            var sadFriend = friendObj.val().name;
-            console.log("this is sad friend");
-            console.log(sadFriend);
-            resolve([sadFriend, minScore]);
-        }, function(err) {
-            console.log("didn't work");
-            console.log(err);
+var _asyncFriends = function requestAsyncFriends(phoneNumber){
+    console.log("inn async friends");
+        console.log("in promise");
+        //.equalTo(phoneNumber).limitToFirst(1)
+        return new Promise(function(resolve, reject){
+            usersRef.orderByChild("phoneNumber").equalTo(phoneNumber).limitToFirst(1).once("value").then((snapshot) => {
+                console.log("here");
+                var userid = snapshot.val();
+                console.log(userid);
+                for(var key in userid){
+                    var runningScore = userid[key]["running_score"];
+                    var name = userid[key]["name"];
+                }
+                console.log("this is running score and name");
+                console.log(runningScore);
+                console.log(name);
+                resolve([name, runningScore]);
+                //var localUserRef = usersRef.child(userid.uid);
+                console.log(userid);
+                console.log(localUserRef);
+                console.log("about to enter localUserRef");
+            });
         });
-    })
+         // usersRef.orderByChild("phoneNumber").equalTo(phoneNumber).limitToFirst(1).once("value").then((snapshot) => {
+         //    console.log("here");
+         //    var userid = snapshot.val();
+         //    console.log(userid);
+         //    for(var key in userid){
+         //        var runningScore = userid[key]["running_score"];
+         //    }
+         //    console.log("this is running score");
+         //    console.log(runningScore);
+         //    //var localUserRef = usersRef.child(userid.uid);
+         //    console.log(userid);
+         //    console.log(localUserRef);
+         //    console.log("about to enter localUserRef");
+            // return localUserRef.once("value").then((data) =>{
+            //     var friendObj = data.val();
+            //     var minScore = friendObj.val().running_score;
+            //     var sadFriend = friendObj.val().name;
+            //     console.log("this is sad friend");
+            //     console.log(sadFriend);
+            // })
+            //  function(data) {
+            //     var friendObj = data.val();
+            //     var minScore = friendObj.val().running_score;
+            //     var sadFriend = friendObj.val().name;
+            //     console.log("this is sad friend");
+            //     console.log(sadFriend);
+            //     //resolve([sadFriend, minScore]);
+            // });
+         // }); {
+         //    var userid = snapshot.val();
+         //    var localUserRef = usersRef.child(userid);
+         //    console.log(userid);
+         //    console.log(localUserRef);
+         //    console.log("about to enter localUserRef");
+         //    return localUserRef.once("value", function(data) {
+         //        var friendObj = data.val();
+         //        var minScore = friendObj.val().running_score;
+         //        var sadFriend = friendObj.val().name;
+         //        console.log("this is sad friend");
+         //        console.log(sadFriend);
+         //        //resolve([sadFriend, minScore]);
+         //    });
+         //    // call get user info
+         //    // extract running score
+         // }, function(err){
+         //    console.log("it didn't work");
+         //    console.log(err);
+         // });
+        //  friendRef.once('value', function(friendObj) {
+        //     console.log("this is friendObj Score:");
+        //     console.log(friendObj.val());
+        //     var minScore = friendObj.val().running_score;
+        //     var sadFriend = friendObj.val().name;
+        //     console.log("this is sad friend");
+        //     console.log(sadFriend);
+        //     resolve([sadFriend, minScore]);
+        // }, function(err) {
+        //     console.log("didn't work");
+        //     console.log(err);
+        // });
+    //});
+    console.log("hit end of func before promise");
 }
-var _getListOfFriends = function(currUserTotal) {
+var _getListOfFriends = function(currUserTotal, callback) {
         if (_auth == null) {
             console.log("Isn't logged in");
             return false;
@@ -380,37 +456,51 @@ var _getListOfFriends = function(currUserTotal) {
             console.log("in auth func");
             return usersRef.child(uid).orderByChild("friends").once('value', function(obj) {
                 console.log("in usersRef Auth");
-                console.log("in promise");
                 var userObj = obj.val();
                 var asyncArray = [];
                 var friendRef = null;
                 console.log(obj.val());
                 console.log(userObj["friends"]);
-                for (key in userObj.friends){
+                for (var key in userObj.friends){
                     friendRef = null;
                     console.log("in loop. ");
-                    var friendUid = userObj["friends"][key]["uid"];
-                    console.log(friendUid);
-                    if(friendUid != undefined) friendRef = usersRef.child(friendUid);
-                    console.log(userObj["friends"][key]["uid"]);
-                    console.log(friendRef);
-                    if(friendRef != null) asyncArray.push(_asyncFriends(friendRef));
+                    var phoneNumber = userObj["friends"][key]["phoneNumber"];
+                    //console.log(friendUid);
+                    // if(phoneNumber != undefined) friendRef = usersRef.child(friendUid);
+                    console.log(userObj["friends"][key]["phoneNumber"]);
+                    //console.log(friendRef);
+                    if(phoneNumber !== undefined) asyncArray.push(_asyncFriends(phoneNumber));
                     console.log(asyncArray);
                 }
                 console.log("about to enter promise all call");
                 console.log(asyncArray);
-                Promise.all(asyncArray).then((values) => {
-                    console.log("in promise all call");
-                    console.log(values);
-                    values.forEach(function(value){
-                        console.log("value");
-                        console.log(value);
-                    });
+                // Promise.all(asyncArray).then((values) => {
+                //     console.log("in promise all call");
+                //     console.log(values);
+                //     sadFriend = values[0];
+                //     values.forEach(function(value){
+                //         console.log("value");
+                //         console.log(value);
+                //     });
+                // });
+                    console.log("hit top of new promise");
+                return Promise.all(asyncArray).then(function(values){
+                        console.log(asyncArray);
+                        var minScore = Number.MAX_SAFE_INTEGER;
+                        var sadFriendName = null;
+                        values.forEach(function(value){
+                            if (value[1] <= minScore) {
+                                sadFriendName = value[0];
+                                minScore = value[1];
+                            }
+                        });
+                        console.log(sadFriendName + " is sad :(");
+                        callback(sadFriendName);
+                        _sadFriend = sadFriendName;
                 });
-                console.log("sad friend outside of loop");
-                console.log(sadFriend);
+                //return Promise.all(asyncArray);
             });
-        })
+        });
 };
 
 var _getHighestFriend = function(){
@@ -427,6 +517,8 @@ var _updateAuthToken = function(){
 var api;
 
 var _auth = _getAuthToken();
+
+var _sadFriend = null;
 
 // });
 
@@ -477,7 +569,8 @@ var _auth = _getAuthToken();
         getListOfFriends: _getListOfFriends,
         auth: _auth,
         schedulePushNotification: _schedulePushNotification,
-        updateAuthToken: _updateAuthToken
+        updateAuthToken: _updateAuthToken,
+        sadFriend: _sadFriend
 
     /*
     createUser is a method that takes in a username and a password and returns

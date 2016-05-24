@@ -136,6 +136,7 @@ class Friends extends React.Component{
 		});
 }
 	render(){
+		api.updateAuthToken();
 		return(
 			 <View style = {styles.mainContainer}>
 					<View style={styles.container1}>
