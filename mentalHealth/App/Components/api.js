@@ -1,6 +1,5 @@
 var React = require('react-native');
 var Firebase = require("firebase");
-// var Promise = require('promise');
 
 var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
 var usermapRef = ref.child("user_map");
@@ -19,7 +18,7 @@ var _checkAuthentication = function(){
 var _schedulePushNotification = function(text){
     var details = {
         fireDate: (new Date(Date.now() + (10 * 1000))).toISOString(),
-        alertBody: text
+        alertBody: text + " isn't doing so hot. You should check in on them!"
     }
     PushNotificationIOS.scheduleLocalNotification(details);
 };
@@ -445,7 +444,7 @@ var _asyncFriends = function requestAsyncFriends(phoneNumber){
     //});
     console.log("hit end of func before promise");
 }
-var _getListOfFriends = function(currUserTotal) {
+var _getListOfFriends = function(currUserTotal, callback) {
         if (_auth == null) {
             console.log("Isn't logged in");
             return false;
@@ -462,7 +461,7 @@ var _getListOfFriends = function(currUserTotal) {
                 var friendRef = null;
                 console.log(obj.val());
                 console.log(userObj["friends"]);
-                for (key in userObj.friends){
+                for (var key in userObj.friends){
                     friendRef = null;
                     console.log("in loop. ");
                     var phoneNumber = userObj["friends"][key]["phoneNumber"];
@@ -470,7 +469,7 @@ var _getListOfFriends = function(currUserTotal) {
                     // if(phoneNumber != undefined) friendRef = usersRef.child(friendUid);
                     console.log(userObj["friends"][key]["phoneNumber"]);
                     //console.log(friendRef);
-                    if(phoneNumber != undefined) asyncArray.push(_asyncFriends(phoneNumber));
+                    if(phoneNumber !== undefined) asyncArray.push(_asyncFriends(phoneNumber));
                     console.log(asyncArray);
                 }
                 console.log("about to enter promise all call");
@@ -484,21 +483,24 @@ var _getListOfFriends = function(currUserTotal) {
                 //         console.log(value);
                 //     });
                 // });
+                    console.log("hit top of new promise");
                 return Promise.all(asyncArray).then(function(values){
-                    var minScore = Number.MAX_SAFE_INTEGER;
-                    var sadFriendName = null;
-
-                    values.forEach(function(value){
-                        if (value[1] <= minScore) {
-                            sadFriendName = value[0];
-                            minScore = value[1];
-                        }
-                    });
-                }, function(error){
-                    console.log(error);
-                })
+                        console.log(asyncArray);
+                        var minScore = Number.MAX_SAFE_INTEGER;
+                        var sadFriendName = null;
+                        values.forEach(function(value){
+                            if (value[1] <= minScore) {
+                                sadFriendName = value[0];
+                                minScore = value[1];
+                            }
+                        });
+                        console.log(sadFriendName + " is sad :(");
+                        callback(sadFriendName);
+                        _sadFriend = sadFriendName;
+                });
+                //return Promise.all(asyncArray);
             });
-        })
+        });
 };
 
 var _getHighestFriend = function(){
@@ -515,6 +517,8 @@ var _updateAuthToken = function(){
 var api;
 
 var _auth = _getAuthToken();
+
+var _sadFriend = null;
 
 // });
 
@@ -565,7 +569,8 @@ var _auth = _getAuthToken();
         getListOfFriends: _getListOfFriends,
         auth: _auth,
         schedulePushNotification: _schedulePushNotification,
-        updateAuthToken: _updateAuthToken
+        updateAuthToken: _updateAuthToken,
+        sadFriend: _sadFriend
 
     /*
     createUser is a method that takes in a username and a password and returns
