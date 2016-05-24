@@ -1,6 +1,7 @@
 var React = require('react-native');
 var Friends = require('./Friends');
 var Notifications = require('./Notifications');
+var LoginInfo = require('./LoginInfo');
 
 
 var {
@@ -82,8 +83,8 @@ class Settings extends React.Component{
 	}
 	changePrivacy(){
 		this.props.navigator.push({
-			component: Privacy,
-			title: 'Account Info',
+			component: LoginInfo,
+			title: 'Update Info',
 			passProps: { 
 				userInfo: this.props.userInfo
 			}
@@ -110,7 +111,7 @@ class Settings extends React.Component{
 				  <TouchableHighlight
 				      style = {this.makeBackground(2)}
 				      onPress = {this.changePrivacy.bind(this)}>
-				        <Text style = {styles.buttonText}> Personal Info </Text>
+				        <Text style = {styles.buttonText}> Login Info </Text>
 				    </TouchableHighlight>
 				  <TouchableHighlight
 				      style = {this.makeBackground(3)}

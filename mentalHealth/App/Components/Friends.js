@@ -128,7 +128,7 @@ class Friends extends React.Component{
 		api.addFriends(this.state.friend1Number).then(() => {
 			this.props.navigator.push({
 				component: Profile,
-				title: 'Profile',
+				title: 'w/me',
 				passProps: {
 					userInfo: this.props
 				}

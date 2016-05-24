@@ -63,7 +63,7 @@ class mentalHealth extends Component {
   }
 
   render() {
-    //AsyncStorage.clear();
+    AsyncStorage.clear();
     if(this.state.loaded && this.state.loadedCredentials){
         if(!this.state.authenticated){ // no user
         return(
