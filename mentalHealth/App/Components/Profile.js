@@ -20,7 +20,8 @@ var styles = StyleSheet.create({
     flex: 1
   },
   image: {
-    height: 350,
+    height: 250,
+    width: 400,
     alignSelf: 'center'
   },
   buttonText: {
@@ -37,14 +38,15 @@ class Profile extends React.Component{
       flexDirection: 'row',
       alignSelf: 'stretch',
       justifyContent: 'center',
-      flex: 1
+      height: 100,
+      marginTop: 10,
     }
     if(btn === 0){
-      obj.backgroundColor = '#48BBEC';
+      obj.backgroundColor = '#F88C1C';
     } else if (btn === 1){
-      obj.backgroundColor = '#E77AAE';
+      obj.backgroundColor = '#F05A1C';
     } else {
-      obj.backgroundColor = '#758BF4';
+      obj.backgroundColor = '#D0021B';
     }
     return obj;
   }
@@ -77,7 +79,7 @@ class Profile extends React.Component{
     console.log(this.props);
     return (
       <View style={styles.container}>
-        <Image source= {require("../images/smiley.jpg")} style={styles.image}/>
+        <Image source= {require("../images/ProfileJournal.png")} style={styles.image}/>
         <TouchableHighlight
             style={this.makeBackground(0)}
             onPress={this.goToCheckIn.bind(this)}

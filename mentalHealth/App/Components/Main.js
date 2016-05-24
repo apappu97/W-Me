@@ -131,7 +131,7 @@ class Main extends React.Component{
 		});
 		// handle login logic
 		this.props.navigator.push({
-			title: 'Profile',// username
+			title: 'w/me',// username
 			component: Profile,//
 			passProps: {userInfo: this.props.userInfo}// whatever response is
 		});

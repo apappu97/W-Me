@@ -1,7 +1,7 @@
 // Welcome to Journal Buddy!
 
 var React = require('react-native');
-var Profile = require('./Friends');
+var Profile = require('./Profile');
 var api = require('./api');
 
 var {
@@ -25,56 +25,59 @@ var styles = StyleSheet.create({
   	},
 	usernameBox: {
 		/* Style for "email" & "password"*/
-		width: 207,
-		height: 33,
+		width: 300,
+		
 		alignSelf: 'center',
-		backgroundColor: "#f7f4f4",
+		backgroundColor: "#FFFFFF",
 		marginTop: 5,
 		borderWidth: 1,
 		borderColor: "#979797",
+		borderRadius: 7,
+		height: 50,
 		
 	},
 	password: {
 		/* Style for "email" & "password"*/
-		width: 207,
-		height: 33,
+		width: 300,
+		
 		alignSelf: 'center',
+		backgroundColor: "#FFFFFF",
 		marginTop: 5,
-		backgroundColor: "#f7f4f4",
-		borderWidth: 1, 
-		borderColor: "#979797"
+		borderWidth: 1,
+		borderColor: "#979797",
+		borderRadius: 7,
+		height: 50,
 	},
 	welcome: {
 		/* Text style for "Welcome to..." */
-		width: 157,
-		height: 14,
-		color: "#043f83",
+		
+		color: "#D0021B",
 		fontFamily: 'Avenir',
 		alignSelf: 'center',
 		textAlign: 'center',
-		fontSize: 12,
-		lineHeight: 14,
-		marginBottom: 10
+		fontSize: 25,
+				marginBottom: 10,
+		marginTop: 2
 	}, 
 	loginText: {
 		width: 157,
-		height: 14,
+
 		color: "#fff",
 		fontFamily: 'Avenir',
 		alignSelf: 'center',
 		textAlign: 'center',
-		fontSize: 12,
-		lineHeight: 14,
-		marginTop: 8
+		justifyContent: 'center',
+		fontSize: 20,
+		marginTop: 12
 	},
 	submit: {
 		/* Style for "Login" button */
-		width: 207,
-		height: 33,
-		backgroundColor: "#E63C1C",
-		borderRadius: 16,
+		width: 300,
+		height: 50,
+		backgroundColor: "#D0021B",
+		borderRadius: 7,
 		alignSelf: 'center',
-		marginTop: 10
+		marginTop: 5
 		//boxShadow: 0 5px 4px rgba(0, 0, 0, 0.5)
 	},
 	signUp: {
@@ -88,9 +91,9 @@ var styles = StyleSheet.create({
 		lineHeight: 14
 	},
 	image: {
-		width: 55,
-		height: 67,
-		marginBottom: 15 ,
+		width: 70,
+		height: 75,
+		marginBottom: 2,
 		alignSelf: 'center'
 	}
 });
@@ -150,7 +153,9 @@ class Signup extends React.Component{
 		api.createUser(this.state.username, this.state.password, this.state.fullname, this.state.email, this.state.number).then(() => {
 			// handle login logic
 			this.props.navigator.push({
-				title: 'Add Friends',// username
+
+				title: 'Profile',// username
+
 				component: Profile,//
 				passProps: {
 					userInfo: this.props,
@@ -176,8 +181,8 @@ class Signup extends React.Component{
 		return (
 			<View style = {styles.mainContainer}>
 
-		      <Image style={styles.image} source={require("../images/journal.jpg")}/>
-			  <Text style = {styles.welcome} > Welcome to w/me! </Text>
+		      <Image style={styles.image} source={require("../images/NewJournal.png")}/>
+			  <Text style = {styles.welcome} > w/me </Text>
 			  <TextInput
 			    style = {styles.usernameBox}
 			    value = {this.state.fullname}
