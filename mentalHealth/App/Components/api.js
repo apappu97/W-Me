@@ -1,7 +1,8 @@
 var React = require('react-native');
 var Firebase = require("firebase");
-
-var ref = new Firebase("https://socialgoodmh.firebaseio.com/");
+var config = require("./config");
+var API_URL = config.API_URL
+var ref = new Firebase(API_URL);
 var usermapRef = ref.child("user_map");
 
 var usersRef = ref.child("users");
